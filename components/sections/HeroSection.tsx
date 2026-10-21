@@ -68,9 +68,12 @@ export function HeroSection() {
               <LuArrowRight className="size-3 text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-150 shrink-0" />
             </Link>
 
-            {/* Hero Headline - balanced typography without ragged orphan words */}
-            <h1 className="animate-fade-in-up animation-delay-75 w-full text-[1.85rem] xs:text-[2.15rem] sm:text-4xl lg:text-[3.25rem] xl:text-[3.65rem] font-semibold tracking-[-0.035em] text-neutral-900 leading-[1.14] [text-wrap:balance]">
-              Discover amazing products you won&apos;t find anywhere else.
+            {/* Hero Headline - guaranteed 2-line balance on mobile devices */}
+            <h1 className="animate-fade-in-up animation-delay-75 w-full text-[clamp(1.5rem,6.4vw,1.75rem)] sm:text-4xl lg:text-[3.25rem] xl:text-[3.65rem] font-semibold tracking-[-0.035em] text-neutral-900 leading-[1.16] sm:leading-[1.14] sm:[text-wrap:balance]">
+              <span className="block sm:inline">Discover amazing products</span>{" "}
+              <span className="block sm:inline">
+                you won&apos;t find anywhere else.
+              </span>
             </h1>
 
             {/* Subtitle - fills width comfortably without awkward line breaks */}
