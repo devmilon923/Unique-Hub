@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90" width="160" height="90" fill="none">
+  <g transform="translate(6, 12)">
+    <!-- Cash icon -->
+    <rect x="4" y="10" width="48" height="32" rx="3.5" stroke="#171717" stroke-width="3" fill="#f8fafc"/>
+    <circle cx="28" cy="26" r="7" stroke="#171717" stroke-width="2.5" fill="none"/>
+    <path d="M9 16l4 4M47 36l-4-4" stroke="#171717" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Bold "COD" & subtext -->
+    <text x="62" y="31" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="800" fill="#171717" letter-spacing="-0.5">COD</text>
+    <text x="62" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="7.5" font-weight="700" fill="#525252" letter-spacing="0.2">CASH ON DELIVERY</text>
+  </g>
+</svg>

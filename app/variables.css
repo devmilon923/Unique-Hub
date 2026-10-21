@@ -1,0 +1,48 @@
+/* UniqueHub Clean & Minimal Design Tokens - High-End E-Commerce */
+:root {
+  /* Minimal Neutral Palette */
+  --brand-primary: oklch(0.18 0 0);
+  --brand-primary-hover: oklch(0.28 0 0);
+
+  /* Semantic UI Tokens (Clean Light Theme) */
+  --background: oklch(0.995 0 0);
+  --foreground: oklch(0.15 0 0);
+  
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0 0);
+  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
+
+  --primary: oklch(0.18 0 0);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.965 0 0);
+  --secondary-foreground: oklch(0.2 0 0);
+
+  --muted: oklch(0.965 0 0);
+  --muted-foreground: oklch(0.52 0 0);
+
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.18 0 0);
+
+  --destructive: oklch(0.58 0.22 28);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.3 0 0);
+
+  /* Clean Radii */
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.25);
+  --radius-xl: calc(var(--radius) * 1.75);
+  --radius-full: 9999px;
+
+  /* Subtle Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+  --shadow-elevated: 0 10px 25px -5px rgb(0 0 0 / 0.05);
+}

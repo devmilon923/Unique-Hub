@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%" fill="none">
+  <rect width="800" height="600" fill="#f8fafc" rx="16"/>
+  <rect x="24" y="24" width="752" height="552" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="8 8" rx="12"/>
+  <g transform="translate(350, 220)" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <rect x="0" y="0" width="100" height="100" rx="12" fill="#f1f5f9"/>
+    <path d="M25 65l18-18 20 20 12-12 15 15"/>
+    <circle cx="35" cy="35" r="8" fill="#cbd5e1" stroke="none"/>
+  </g>
+  <text x="400" y="360" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="500" fill="#64748b" text-anchor="middle" letter-spacing="0.5">
+    UniqueHub Curated Product
+  </text>
+  <text x="400" y="388" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">
+    Cross-Border Sourced • 4:3 Ratio Preview
+  </text>
+</svg>
