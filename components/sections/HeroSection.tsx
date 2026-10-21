@@ -69,7 +69,7 @@ export function HeroSection() {
             </Link>
 
             {/* Hero Headline - guaranteed 2-line balance on mobile devices */}
-            <h1 className="animate-fade-in-up animation-delay-75 w-full text-[1.8rem] sm:text-4xl lg:text-[3.25rem] xl:text-[3.65rem] font-semibold tracking-[-0.035em] text-neutral-900 leading-[1.16] sm:leading-[1.14] sm:[text-wrap:balance]">
+            <h1 className="animate-fade-in-up animation-delay-75 w-full text-[1.68rem] sm:text-[1.78rem] lg:text-[3.25rem] xl:text-[3.65rem] font-semibold tracking-[-0.035em] text-neutral-900 leading-[1.16] sm:leading-[1.14] sm:[text-wrap:balance]">
               <span className="block sm:inline">Discover amazing products</span>{" "}
               <span className="block sm:inline">
                 you won&apos;t find anywhere else.
