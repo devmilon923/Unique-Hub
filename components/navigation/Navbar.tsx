@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   LuCompass,
   LuShoppingBag,
@@ -11,6 +12,7 @@ import {
   LuX,
   LuPackage,
   LuArrowRight,
+  LuShieldCheck,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
@@ -18,12 +20,15 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { totalCount, setIsCartOpen } = useCart();
+  const { isAuthenticated, isAdmin } = useAuth();
   const pathname = usePathname();
 
   // Close mobile drawer upon route transitions
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileMenuOpen(false);
-  }, [pathname]);
+  }
 
   // Dynamic scroll state with passive listener for butter-smooth framerates
   useEffect(() => {
@@ -136,6 +141,18 @@ export function Navbar() {
               )}
             </button>
 
+            {/* Admin Portal Indicator for Authenticated Admins */}
+            {isAuthenticated && isAdmin && (
+              <Link
+                href="/admin"
+                className="group flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 rounded-xl border border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800 transition-all duration-150 text-xs font-medium active:scale-95 shadow-2xs"
+                aria-label="Go to Admin Dashboard"
+              >
+                <LuShieldCheck className="size-3.5" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
+
             {/* Mobile Menu Toggle Button */}
             <button
               type="button"
@@ -174,7 +191,7 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <div className="pt-2 mt-1 border-t border-neutral-100">
+            <div className="pt-2 mt-1 border-t border-neutral-100 space-y-1">
               <Link
                 href="/products"
                 onClick={() => setMobileMenuOpen(false)}
@@ -185,6 +202,17 @@ export function Navbar() {
                   <span>Find Product</span>
                 </div>
                 <LuArrowRight className="size-3.5 text-neutral-400" />
+              </Link>
+              <Link
+                href={isAuthenticated && isAdmin ? "/admin" : "/admin/login"}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between rounded-xl hover:bg-neutral-50 px-3.5 py-2 text-xs font-medium text-neutral-600 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <LuShieldCheck className="size-3.5 text-neutral-500" />
+                  <span>{isAuthenticated && isAdmin ? "Admin Dashboard" : "Admin Sign In"}</span>
+                </div>
+                <LuArrowRight className="size-3 text-neutral-400" />
               </Link>
             </div>
           </div>
