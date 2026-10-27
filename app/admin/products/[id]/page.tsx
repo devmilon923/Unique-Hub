@@ -24,6 +24,7 @@ import {
   LuImage,
   LuImages,
 } from "react-icons/lu";
+import { ProductDescriptionPreview } from "@/components/products/ProductDescriptionPreview";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -385,9 +386,10 @@ export default function AdminProductDetailsPage({ params }: PageProps) {
             <h2 className="text-sm font-semibold text-neutral-950">
               Description
             </h2>
-            <div className="text-xs text-neutral-700 leading-relaxed whitespace-pre-line">
-              {product.description}
-            </div>
+            <ProductDescriptionPreview
+              content={product.description}
+              className="text-xs"
+            />
           </div>
         </div>
 

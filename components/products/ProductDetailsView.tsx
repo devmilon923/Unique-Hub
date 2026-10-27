@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ProductDescriptionPreview } from "@/components/products/ProductDescriptionPreview";
 import {
   LuMinus,
   LuPlus,
@@ -433,16 +434,22 @@ export function ProductDetailsView({
             <article className="space-y-8 text-neutral-700 text-sm leading-relaxed">
               {/* Introduction Paragraph */}
               <div>
-                <p className="text-base text-neutral-600 leading-relaxed font-normal">
-                  {product.description}
-                </p>
-                <p className="mt-3 text-neutral-600 leading-relaxed">
-                  Engineered and curated for individuals who value precision
-                  hardware, minimal aesthetics, and reliable everyday utility.
-                  Imported directly from specialized overseas boutique
-                  manufacturers and electronics research laboratories in{" "}
-                  <strong>{product.origin}</strong>.
-                </p>
+                <ProductDescriptionPreview
+                  content={product.description}
+                  className="text-neutral-700"
+                />
+                {product.origin && (
+                  <p className="mt-4 text-xs sm:text-sm text-neutral-500 leading-relaxed border-t border-neutral-100 pt-3">
+                    Engineered and curated for individuals who value precision
+                    hardware, minimal aesthetics, and reliable everyday utility.
+                    Imported directly from specialized overseas boutique
+                    manufacturers and electronics research laboratories in{" "}
+                    <strong className="text-neutral-700 font-medium">
+                      {product.origin}
+                    </strong>
+                    .
+                  </p>
+                )}
               </div>
 
               {/* Technical Specifications Definition List */}

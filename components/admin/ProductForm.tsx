@@ -20,6 +20,12 @@ import {
   LuArrowLeft,
   LuCalendar,
 } from "react-icons/lu";
+import AdminProductDescription from "./Editor";
+import {
+  ProductDescriptionPreview,
+  isDescriptionEmpty,
+} from "@/components/products/ProductDescriptionPreview";
+import { cn } from "@/lib/utils";
 
 interface ProductFormProps {
   initialData?: Partial<ProductItem>;
@@ -78,6 +84,7 @@ export function ProductForm({
   const [description, setDescription] = useState(
     initialData?.description || ""
   );
+  const [descriptionTab, setDescriptionTab] = useState<"edit" | "preview">("edit");
 
   // Imagery state
   const [featuredImage, setFeaturedImage] = useState<string>(
@@ -204,7 +211,7 @@ export function ProductForm({
       setValidationError("Delivery heading is required.");
       return;
     }
-    if (!description.trim()) {
+    if (isDescriptionEmpty(description)) {
       setValidationError("Description is required.");
       return;
     }
@@ -719,24 +726,66 @@ export function ProductForm({
       </div>
 
       {/* Section 4: Description */}
-      <div className="rounded-2xl border border-neutral-200/90 bg-card p-5 sm:p-6 shadow-subtle space-y-4">
-        <div className="border-b border-neutral-100 pb-3">
-          <h2 className="text-sm font-semibold text-neutral-950">
-            Description
-          </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Full product specifications and details.
-          </p>
+      <div className="rounded-2xl border border-neutral-200/90 bg-card shadow-subtle overflow-hidden">
+        {/* Card Header */}
+        <div className="flex items-center justify-between p-5 sm:p-6 pb-3.5 sm:pb-4 border-b border-neutral-100">
+          <div>
+            <h2 className="text-sm font-semibold text-neutral-950">
+              Description <span className="text-destructive">*</span>
+            </h2>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Full product specifications, rich formatting, and details.
+            </p>
+          </div>
+
+          <div className="flex items-center rounded-lg border border-neutral-200 bg-neutral-100/70 p-0.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setDescriptionTab("edit")}
+              className={cn(
+                "px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer",
+                descriptionTab === "edit"
+                  ? "bg-white text-neutral-900 shadow-2xs"
+                  : "text-neutral-500 hover:text-neutral-900"
+              )}
+            >
+              Editor
+            </button>
+            <button
+              type="button"
+              onClick={() => setDescriptionTab("preview")}
+              className={cn(
+                "px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer",
+                descriptionTab === "preview"
+                  ? "bg-white text-neutral-900 shadow-2xs"
+                  : "text-neutral-500 hover:text-neutral-900"
+              )}
+            >
+              Preview
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-1.5">
-          <textarea
-            required
-            rows={5}
-            placeholder="Product details, specifications, packaging, and warranty..."
+        {/* Full-width Editor Workspace (seamless, no inner padding, no harsh outline) */}
+        <div className={descriptionTab === "edit" ? "block" : "hidden"}>
+          <AdminProductDescription
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="flex w-full rounded-xl border border-input bg-background p-3 text-xs text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            onChange={setDescription}
+            disabled={isSubmitting}
+            borderless
+          />
+        </div>
+
+        <div
+          className={
+            descriptionTab === "preview"
+              ? "block p-5 sm:p-6 min-h-[220px] bg-neutral-50/30"
+              : "hidden"
+          }
+        >
+          <ProductDescriptionPreview
+            content={description}
+            fallbackText="No description content yet. Switch to the Editor tab to write product details."
           />
         </div>
       </div>
