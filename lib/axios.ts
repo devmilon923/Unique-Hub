@@ -12,12 +12,36 @@ export const api = axios.create({
 // Extract human-readable error messages from responses
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<{ message?: string }>) => {
-    const message =
-      error.response?.data?.message ||
-      error.message ||
-      "Unable to communicate with the server.";
-    return Promise.reject(new Error(message));
+  (error: AxiosError<{ message?: string; data?: unknown }>) => {
+    const errorData = error.response?.data;
+    let message = errorData?.message;
+
+    // If backend zodValidator returns formatted field errors in data
+    if (errorData?.data && typeof errorData.data === "object") {
+      const fieldMessages: string[] = [];
+      const extractErrors = (obj: unknown) => {
+        if (!obj || typeof obj !== "object") return;
+        const record = obj as Record<string, unknown>;
+        if (Array.isArray(record._errors) && record._errors.length > 0) {
+          for (const err of record._errors) {
+            if (typeof err === "string") fieldMessages.push(err);
+          }
+        }
+        for (const key of Object.keys(record)) {
+          if (key !== "_errors") {
+            extractErrors(record[key]);
+          }
+        }
+      };
+      extractErrors(errorData.data);
+      if (fieldMessages.length > 0) {
+        message = fieldMessages.join("; ");
+      }
+    }
+
+    return Promise.reject(
+      new Error(message || error.message || "Unable to communicate with the server.")
+    );
   }
 );
 
@@ -36,7 +60,8 @@ export interface LoginCredentials {
 }
 
 export interface ApiResponse<T = unknown> {
-  status: boolean;
+  status?: boolean;
+  success?: boolean;
   message: string;
   data: T;
 }

@@ -35,7 +35,7 @@ export function AdminNav() {
 
   const navItems = [
     { name: "Overview", href: "/admin", icon: LuLayoutDashboard },
-    { name: "Products", href: "/products", icon: LuBoxes, external: true },
+    { name: "Products", href: "/admin/products", icon: LuBoxes },
   ];
 
   return (
@@ -66,7 +66,9 @@ export function AdminNav() {
             <nav className="hidden sm:flex items-center gap-1 ml-4 border-l border-neutral-200 pl-4">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const active = pathname === item.href;
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/admin" && pathname.startsWith(item.href));
                 return (
                   <Link
                     key={item.name}
@@ -80,9 +82,6 @@ export function AdminNav() {
                   >
                     <Icon className="size-3.5" />
                     <span>{item.name}</span>
-                    {item.external && (
-                      <LuExternalLink className="size-3 text-neutral-400" />
-                    )}
                   </Link>
                 );
               })}

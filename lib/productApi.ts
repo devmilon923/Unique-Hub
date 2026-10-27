@@ -1,0 +1,142 @@
+import { api, ApiResponse } from "./axios";
+
+export type ProductStatus = "pre" | "live" | "featured" | "hidden";
+
+export interface ProductColor {
+  value: string; // Hex code (e.g. "#000000") or color name
+  stock: number;
+  _id?: string;
+}
+
+export interface PreOrderDetails {
+  launchDate?: string | Date;
+  totalLots?: number;
+  fillLots?: number;
+}
+
+export interface ProductItem {
+  _id: string;
+  name: string;
+  regularPrice: number;
+  salePrice: number;
+  slug: string;
+  description: string;
+  Importer: string;
+  category: string;
+  color: ProductColor[];
+  deliveryHeading: string;
+  status: ProductStatus;
+  featuredImage?: string;
+  gallary?: string[];
+  gallery?: string[];
+  preOrderDetails?: PreOrderDetails;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+export interface ProductPagination {
+  totalData: number;
+  totalPage: number;
+  currentPage: number;
+  nextPage: number;
+  prevPage: number;
+}
+
+export interface ProductListResponseData {
+  result: ProductItem[];
+  pagination: ProductPagination;
+}
+
+export interface CreateProductInput {
+  name: string;
+  regularPrice: number;
+  salePrice: number;
+  slug: string;
+  description: string;
+  Importer: string;
+  category: string;
+  color: ProductColor[];
+  deliveryHeading: string;
+  status: ProductStatus;
+  featuredImage: string;
+  gallary: string[];
+  gallery?: string[];
+  preOrderDetails?: {
+    launchDate: string | Date;
+    totalLots: number;
+    fillLots?: number;
+  };
+}
+
+export type UpdateProductInput = Partial<CreateProductInput>;
+
+export interface ProductFilterQuery {
+  page?: number;
+  limit?: number;
+  category?: string;
+  status?: string;
+}
+
+export const productApi = {
+  /**
+   * Fetch paginated products with optional filters for category and status
+   */
+  async getAll(
+    query?: ProductFilterQuery
+  ): Promise<ProductListResponseData> {
+    const res = await api.get<ApiResponse<ProductListResponseData>>("/product", {
+      params: query,
+    });
+    const data = res.data?.data;
+    return {
+      result: Array.isArray(data?.result) ? data.result : [],
+      pagination: data?.pagination || {
+        totalData: 0,
+        totalPage: 1,
+        currentPage: 1,
+        nextPage: 0,
+        prevPage: 0,
+      },
+    };
+  },
+
+  /**
+   * Fetch single product by slug or ObjectId (Admin protected)
+   */
+  async getBySlugOrId(slugOrId: string): Promise<ProductItem> {
+    const res = await api.get<ApiResponse<ProductItem>>(
+      `/product/details/${encodeURIComponent(slugOrId)}`
+    );
+    return res.data.data;
+  },
+
+  /**
+   * Add a new product (Admin protected)
+   */
+  async create(data: CreateProductInput): Promise<ProductItem> {
+    const res = await api.post<ApiResponse<ProductItem>>("/product", data);
+    return res.data.data;
+  },
+
+  /**
+   * Edit existing product by ObjectId (Admin protected)
+   */
+  async update(id: string, data: UpdateProductInput): Promise<ProductItem> {
+    const res = await api.patch<ApiResponse<ProductItem>>(
+      `/product/edit/${encodeURIComponent(id)}`,
+      data
+    );
+    return res.data.data;
+  },
+
+  /**
+   * Delete product by ObjectId (Admin protected)
+   */
+  async delete(id: string): Promise<ProductItem> {
+    const res = await api.delete<ApiResponse<ProductItem>>(
+      `/product/delete/${encodeURIComponent(id)}`
+    );
+    return res.data.data;
+  },
+};
