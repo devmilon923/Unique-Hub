@@ -1,14 +1,29 @@
 import React from "react";
 import Link from "next/link";
-import { PRODUCTS } from "@/data/products";
+import { Product } from "@/data/products";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { LuArrowRight } from "react-icons/lu";
 
-export function FeaturedSection() {
-  const featuredProducts = PRODUCTS.filter((item) => item.isFeatured).slice(0, 4);
+interface FeaturedSectionProps {
+  products?: Product[];
+}
+
+export function FeaturedSection({ products = [] }: FeaturedSectionProps) {
+  const featured = products.filter(
+    (item) => item.isFeatured || item.status === "featured"
+  );
+
+  const displayList = featured.length > 0 ? featured : products.slice(0, 4);
+
+  if (displayList.length === 0) {
+    return null;
+  }
 
   return (
-    <section id="featured" className="py-16 sm:py-24 bg-white border-b border-neutral-200/80 scroll-mt-20">
+    <section
+      id="featured"
+      className="py-16 sm:py-24 bg-white border-b border-neutral-200/80 scroll-mt-20"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
@@ -20,7 +35,7 @@ export function FeaturedSection() {
               Featured Products
             </h2>
             <p className="mt-1 text-sm text-neutral-500">
-              Hand-picked selections tested for craftsmanship and everyday utility.
+              Hand-picked selections tested for craftsmanship, performance, and everyday utility.
             </p>
           </div>
 
@@ -28,14 +43,14 @@ export function FeaturedSection() {
             href="/products"
             className="group inline-flex items-center text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors duration-150 cursor-pointer"
           >
-            <span>More</span>
+            <span>View All</span>
             <LuArrowRight className="size-4 ml-1 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         </div>
 
         {/* Clean Product Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {featuredProducts.map((product) => (
+          {displayList.slice(0, 4).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

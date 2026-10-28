@@ -1,20 +1,29 @@
 import React from "react";
 import Link from "next/link";
-import { PRODUCTS } from "@/data/products";
+import { Product } from "@/data/products";
 import { ProductCard } from "@/components/shared/ProductCard";
-import { LuArrowRight } from "react-icons/lu";
+import { LuArrowRight, LuCalendarClock } from "react-icons/lu";
 
-export function PreOrderSection() {
-  const preOrderProducts = PRODUCTS.filter((item) => item.isPreOrder).slice(0, 4);
+interface PreOrderSectionProps {
+  products?: Product[];
+}
+
+export function PreOrderSection({ products = [] }: PreOrderSectionProps) {
+  const preOrderProducts = products.filter(
+    (item) => item.isPreOrder || item.status === "pre"
+  );
 
   return (
-    <section id="pre-order" className="py-16 sm:py-24 bg-white border-b border-neutral-200/80 scroll-mt-20">
+    <section
+      id="pre-order"
+      className="py-16 sm:py-24 bg-white border-b border-neutral-200/80 scroll-mt-20"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-              Upcoming Shipments • Batch 07
+              Upcoming Shipments • Scheduled Batch
             </span>
             <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
               Pre-Order Drops
@@ -28,17 +37,41 @@ export function PreOrderSection() {
             href="/products?filter=preorder"
             className="group inline-flex items-center text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors duration-150 cursor-pointer"
           >
-            <span>More</span>
+            <span>View All</span>
             <LuArrowRight className="size-4 ml-1 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Clean Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {preOrderProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {/* Clean Product Grid or Next Batch Card */}
+        {preOrderProducts.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            {preOrderProducts.slice(0, 4).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50/50 p-8 sm:p-12 text-center max-w-xl mx-auto">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-white border border-neutral-200 text-neutral-700 shadow-2xs mb-3">
+              <LuCalendarClock className="size-6 stroke-[1.8]" />
+            </div>
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Next Air Cargo Drop In Preparation
+            </h3>
+            <p className="mt-1 text-xs text-neutral-500 leading-relaxed">
+              Our sourcing team is curating the next scheduled shipment from overseas labs.
+              Pre-order slots will open once flight cargo manifests are locked.
+            </p>
+            <div className="mt-4">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-900 hover:text-neutral-600"
+              >
+                <span>Browse Ready Stock</span>
+                <LuArrowRight className="size-3.5" />
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

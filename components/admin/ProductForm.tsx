@@ -108,11 +108,6 @@ export function ProductForm({
     }
     return "";
   });
-  const [totalLots, setTotalLots] = useState(
-    initialData?.preOrderDetails?.totalLots !== undefined
-      ? String(initialData.preOrderDetails.totalLots)
-      : "100"
-  );
 
   // Colors & Stock
   const [colors, setColors] = useState<ProductColor[]>(() => {
@@ -124,8 +119,8 @@ export function ProductForm({
       }));
     }
     return [
-      { value: "#000000", stock: 50 },
-      { value: "#FFFFFF", stock: 30 },
+      { value: "#000000", stock: 0 },
+      { value: "#FFFFFF", stock: 0 },
     ];
   });
 
@@ -276,12 +271,6 @@ export function ProductForm({
         setValidationError("Please enter a valid launch date.");
         return;
       }
-
-      const lotsNum = parseInt(totalLots, 10);
-      if (isNaN(lotsNum) || lotsNum < 1) {
-        setValidationError("Total lots must be at least 1.");
-        return;
-      }
     }
 
     const payload: CreateProductInput = {
@@ -306,8 +295,6 @@ export function ProductForm({
     if (status === "pre") {
       payload.preOrderDetails = {
         launchDate: new Date(launchDate).toISOString(),
-        totalLots: Math.max(1, parseInt(totalLots, 10) || 1),
-        fillLots: initialData?.preOrderDetails?.fillLots || 0,
       };
     }
 
@@ -583,13 +570,13 @@ export function ProductForm({
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
               <div className="space-y-1.5">
                 <label
                   htmlFor="pre-launch-date"
                   className="block text-xs font-medium text-amber-950"
                 >
-                  Launch Date <span className="text-destructive">*</span>
+                  Estimated Launch Date <span className="text-destructive">*</span>
                 </label>
                 <Input
                   id="pre-launch-date"
@@ -601,23 +588,16 @@ export function ProductForm({
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="pre-total-lots"
-                  className="block text-xs font-medium text-amber-950"
-                >
-                  Total Lots <span className="text-destructive">*</span>
-                </label>
-                <Input
-                  id="pre-total-lots"
-                  type="number"
-                  min="1"
-                  required={status === "pre"}
-                  placeholder="100"
-                  value={totalLots}
-                  onChange={(e) => setTotalLots(e.target.value)}
-                  className="text-xs h-9.5 bg-white border-amber-200 text-neutral-900"
-                />
+              <div className="rounded-xl border border-amber-200/90 bg-white/90 p-2.5 text-xs text-amber-950">
+                <div className="text-[11px] font-medium text-amber-800">
+                  Total Pre-Order Allocation:
+                </div>
+                <div className="text-sm font-semibold text-neutral-900 mt-0.5">
+                  {colors.reduce((acc, c) => acc + (Number(c.stock) || 0), 0)} Units
+                </div>
+                <div className="text-[10px] text-amber-700/90 mt-0.5 leading-tight">
+                  Pre-order lots are controlled directly by color variant stock levels below.
+                </div>
               </div>
             </div>
           </div>

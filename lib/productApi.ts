@@ -10,8 +10,6 @@ export interface ProductColor {
 
 export interface PreOrderDetails {
   launchDate?: string | Date;
-  totalLots?: number;
-  fillLots?: number;
 }
 
 export interface ProductItem {
@@ -64,8 +62,6 @@ export interface CreateProductInput {
   gallery?: string[];
   preOrderDetails?: {
     launchDate: string | Date;
-    totalLots: number;
-    fillLots?: number;
   };
 }
 
@@ -76,6 +72,7 @@ export interface ProductFilterQuery {
   limit?: number;
   category?: string;
   status?: string;
+  search?: string;
 }
 
 export const productApi = {
@@ -102,13 +99,46 @@ export const productApi = {
   },
 
   /**
-   * Fetch single product by slug or ObjectId (Admin protected)
+   * Fetch single product by slug or ObjectId (Public)
    */
   async getBySlugOrId(slugOrId: string): Promise<ProductItem> {
     const res = await api.get<ApiResponse<ProductItem>>(
       `/product/details/${encodeURIComponent(slugOrId)}`
     );
     return res.data.data;
+  },
+
+  /**
+   * Fetch related products for recommendations (Public)
+   */
+  async getRelated(
+    category?: string,
+    excludeId?: string,
+    limit: number = 4
+  ): Promise<ProductItem[]> {
+    try {
+      const res = await this.getAll({
+        category: category || undefined,
+        limit: limit + 2,
+      });
+      const filtered = (res.result || []).filter(
+        (p) => p._id !== excludeId && p.status !== "hidden"
+      );
+      if (filtered.length >= limit || !category) {
+        return filtered.slice(0, limit);
+      }
+      // If same category didn't have enough, fetch general products
+      const fallbackRes = await this.getAll({ limit: limit + 2 });
+      const fallbackList = (fallbackRes.result || []).filter(
+        (p) =>
+          p._id !== excludeId &&
+          p.status !== "hidden" &&
+          !filtered.some((f) => f._id === p._id)
+      );
+      return [...filtered, ...fallbackList].slice(0, limit);
+    } catch {
+      return [];
+    }
   },
 
   /**

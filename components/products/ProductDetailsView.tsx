@@ -32,7 +32,7 @@ export function ProductDetailsView({
   product,
   relatedProducts,
 }: ProductDetailsViewProps) {
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart, buyNow } = useCart();
 
   // Variations
   const variations: ProductVariation[] = product.variation || [];
@@ -42,7 +42,7 @@ export function ProductDetailsView({
   const [selectedVariation, setSelectedVariation] =
     useState<ProductVariation | undefined>(defaultVariation);
   const [activeImage, setActiveImage] = useState<string>(
-    defaultVariation?.imagePath || product.image || "/images/product/1.jpg"
+    defaultVariation?.imagePath || product.image || "/placeholder-product.svg"
   );
   const [quantity, setQuantity] = useState<number>(1);
   const [addedToast, setAddedToast] = useState(false);
@@ -84,9 +84,19 @@ export function ProductDetailsView({
 
   const handleBuyNow = () => {
     if (!isCurrentVariationAvailable) return;
-    addToCart(product, quantity, selectedVariation);
-    setIsCartOpen(true);
+    buyNow(product, quantity, selectedVariation);
   };
+
+  const galleryImages = React.useMemo(() => {
+    if (product.images && product.images.length > 0) {
+      return product.images;
+    }
+    const fromVars = (product.variation || [])
+      .map((v) => v.imagePath)
+      .filter(Boolean);
+    if (fromVars.length > 0) return fromVars;
+    return [product.image || "/placeholder-product.svg"];
+  }, [product]);
 
   return (
     <div className="bg-white">
@@ -123,41 +133,30 @@ export function ProductDetailsView({
               />
             </div>
 
-            {/* Thumbnail Row (Harmonized 4:3 Thumbnails) */}
-            {variations.length > 0 && (
-              <div className="grid grid-cols-4 gap-3">
-                {variations.map((v, idx) => {
-                  const isSelected = selectedVariation?.color === v.color;
+            {/* Gallery Thumbnail Row (Harmonized 4:3 Thumbnails) */}
+            {galleryImages.length > 1 && (
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5">
+                {galleryImages.map((img, idx) => {
+                  const isSelected = activeImage === img;
                   return (
                     <button
-                      key={v.color || idx}
+                      key={img || idx}
                       type="button"
-                      disabled={!v.isAvailable}
-                      onClick={() => {
-                        if (!v.isAvailable) return;
-                        handleSelectVariation(v);
-                      }}
+                      onClick={() => setActiveImage(img)}
                       className={cn(
-                        "relative aspect-[4/3] w-full overflow-hidden rounded-xl border p-0.5 transition-all duration-200 ease-out",
+                        "relative aspect-[4/3] w-full overflow-hidden rounded-xl border p-0.5 transition-all duration-200 ease-out cursor-pointer active:scale-95",
                         isSelected
                           ? "border-neutral-900 ring-2 ring-neutral-900/10 shadow-xs"
-                          : v.isAvailable
-                          ? "border-neutral-200 hover:border-neutral-400 opacity-80 hover:opacity-100 cursor-pointer active:scale-95"
-                          : "border-neutral-200 opacity-30 cursor-not-allowed"
+                          : "border-neutral-200 hover:border-neutral-400 opacity-80 hover:opacity-100"
                       )}
-                      aria-label="Color variation thumbnail"
+                      aria-label={`Product image view ${idx + 1}`}
                     >
                       <Image
-                        src={v.imagePath || product.image || "/placeholder-product.svg"}
-                        alt={product.name}
+                        src={img || "/placeholder-product.svg"}
+                        alt={`${product.name} thumbnail ${idx + 1}`}
                         fill
                         sizes="120px"
                         className="object-cover rounded-lg"
-                      />
-                      {/* Subtle Color Dot on Corner */}
-                      <span
-                        className="absolute bottom-1.5 right-1.5 size-2.5 rounded-full border border-white shadow-xs"
-                        style={{ backgroundColor: v.color }}
                       />
                     </button>
                   );
@@ -371,12 +370,12 @@ export function ProductDetailsView({
                   {addedToast ? (
                     <>
                       <LuCheck className="size-4 text-emerald-600 animate-in zoom-in-50 duration-200" />
-                      <span>Added to Cart</span>
+                      <span>Added to Bucket</span>
                     </>
                   ) : (
                     <>
                       <LuShoppingBag className="size-4 text-neutral-700" />
-                      <span>Add to Cart</span>
+                      <span>Add to Bucket</span>
                     </>
                   )}
                 </Button>
@@ -438,51 +437,9 @@ export function ProductDetailsView({
                   content={product.description}
                   className="text-neutral-700"
                 />
-                {product.origin && (
-                  <p className="mt-4 text-xs sm:text-sm text-neutral-500 leading-relaxed border-t border-neutral-100 pt-3">
-                    Engineered and curated for individuals who value precision
-                    hardware, minimal aesthetics, and reliable everyday utility.
-                    Imported directly from specialized overseas boutique
-                    manufacturers and electronics research laboratories in{" "}
-                    <strong className="text-neutral-700 font-medium">
-                      {product.origin}
-                    </strong>
-                    .
-                  </p>
-                )}
               </div>
 
-              {/* Technical Specifications Definition List */}
-              {product.specs && (
-                <div className="border-t border-neutral-200/80 pt-6">
-                  <h3 className="text-base font-semibold text-neutral-900 tracking-tight mb-4">
-                    Technical Specifications
-                  </h3>
-
-                  <div className="rounded-xl border border-neutral-200/80 divide-y divide-neutral-200/80 overflow-hidden bg-white">
-                    {Object.entries(product.specs).map(([param, detail]) => (
-                      <div
-                        key={param}
-                        className="grid grid-cols-1 sm:grid-cols-3 p-3.5 text-xs gap-1 sm:gap-4"
-                      >
-                        <dt className="font-medium text-neutral-500">
-                          {param}
-                        </dt>
-                        <dd className="sm:col-span-2 font-normal text-neutral-900 m-0">
-                          {detail}
-                        </dd>
-                      </div>
-                    ))}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 p-3.5 text-xs gap-1 sm:gap-4 bg-neutral-50/40">
-                      <dt className="font-medium text-neutral-500">Origin Lab</dt>
-                      <dd className="sm:col-span-2 font-normal text-neutral-900 m-0">
-                        {product.origin}
-                      </dd>
-                    </div>
-                  </div>
-                </div>
-              )}
-
+              <br />
               {/* Editorial / Sourcing Callout (Rich Blockquote Format) */}
               <div className="border-l-2 border-neutral-900 pl-4 py-1 my-6 bg-neutral-50/50 rounded-r-lg p-4">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-900 mb-1">

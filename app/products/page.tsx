@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { PRODUCTS, CATEGORIES, CategoryType } from "@/data/products";
+import { Product } from "@/data/products";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { productApi, ProductFilterQuery } from "@/lib/productApi";
+import { adaptProductItem } from "@/lib/productAdapter";
 import { cn } from "@/lib/utils";
 import {
   LuSearch,
   LuX,
-  LuChevronDown,
   LuRotateCcw,
   LuArrowDown,
 } from "react-icons/lu";
@@ -20,78 +21,129 @@ import {
 const INITIAL_VISIBLE_COUNT = 8;
 const LOAD_MORE_STEP = 4;
 
+function ProductSkeleton() {
+  return (
+    <div className="flex flex-col animate-pulse">
+      <div className="relative aspect-[4/3] w-full rounded-xl bg-neutral-200/80" />
+      <div className="mt-3 space-y-2">
+        <div className="h-4 w-3/4 rounded bg-neutral-200/80" />
+        <div className="h-4 w-1/3 rounded bg-neutral-200/80" />
+      </div>
+    </div>
+  );
+}
+
 function ProductsContent() {
   const searchParams = useSearchParams();
   const initialFilter = searchParams.get("filter");
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>("All");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [filterPreorderOnly, setFilterPreorderOnly] = useState(
     initialFilter === "preorder",
   );
-  const [sortBy, setSortBy] = useState<
-    "featured" | "price-asc" | "price-desc" | "rating"
-  >("featured");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All"]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Filter products based on search query, category, and preorder
+  // Debounce search query so server isn't spammed per keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Initial category list from all inventory
+  useEffect(() => {
+    productApi
+      .getAll({ limit: 100 })
+      .then((data) => {
+        if (data?.result && Array.isArray(data.result)) {
+          const list = Array.from(
+            new Set(
+              data.result
+                .filter((p) => p.status !== "hidden")
+                .map((p) => p.category)
+                .filter(Boolean),
+            ),
+          );
+          setCategories(["All", ...list]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Server-side product search & filtering
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    const queryParams: ProductFilterQuery = {
+      limit: 100,
+    };
+
+    if (debouncedSearch.trim()) {
+      queryParams.search = debouncedSearch.trim();
+    }
+    if (selectedCategory !== "All") {
+      queryParams.category = selectedCategory;
+    }
+    if (filterPreorderOnly) {
+      queryParams.status = "pre";
+    }
+
+    productApi
+      .getAll(queryParams)
+      .then((data) => {
+        if (!isMounted) return;
+        if (data?.result && Array.isArray(data.result)) {
+          const live = data.result
+            .filter((item) => item.status !== "hidden")
+            .map(adaptProductItem);
+          setAllProducts(live);
+        } else {
+          setAllProducts([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load products from API:", err);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [debouncedSearch, selectedCategory, filterPreorderOnly]);
+
+  // Client-level search logic is completely removed:
+  // Products are filtered server-side via productApi.getAll({ search }).
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
-      // Preorder check if requested
+    return allProducts.filter((product) => {
       if (filterPreorderOnly && !product.isPreOrder) {
         return false;
       }
-
-      // Category match
-      const matchesCategory =
-        selectedCategory === "All" || product.category === selectedCategory;
-
-      // Search match
-      const query = searchQuery.trim().toLowerCase();
-      const matchesSearch =
-        !query ||
-        product.name.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query) ||
-        product.highlights.some((h) => h.toLowerCase().includes(query));
-
-      return matchesCategory && matchesSearch;
+      return true;
     });
-  }, [searchQuery, selectedCategory, filterPreorderOnly]);
+  }, [allProducts, filterPreorderOnly]);
 
-  // Sort products
-  const sortedProducts = useMemo(() => {
-    const list = [...filteredProducts];
-    switch (sortBy) {
-      case "price-asc":
-        return list.sort((a, b) => a.price - b.price);
-      case "price-desc":
-        return list.sort((a, b) => b.price - a.price);
-      case "rating":
-        return list.sort((a, b) => b.rating - a.rating);
-      case "featured":
-      default:
-        return list.sort((a, b) => {
-          if (a.isFeatured && !b.isFeatured) return -1;
-          if (!a.isFeatured && b.isFeatured) return 1;
-          return 0;
-        });
-    }
-  }, [filteredProducts, sortBy]);
-
-  const displayedProducts = sortedProducts.slice(0, visibleCount);
-  const hasMore = visibleCount < sortedProducts.length;
+  const displayedProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
 
   const handleResetFilters = () => {
     setSearchQuery("");
+    setDebouncedSearch("");
     setSelectedCategory("All");
     setFilterPreorderOnly(false);
-    setSortBy("featured");
     setVisibleCount(INITIAL_VISIBLE_COUNT);
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4  pb-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
       {/* Page Title */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
@@ -129,40 +181,13 @@ function ProductsContent() {
               </button>
             )}
           </div>
-
-          {/* Sort Selection */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-neutral-400 font-medium hidden sm:inline">
-              Sort:
-            </span>
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) =>
-                  setSortBy(
-                    e.target.value as
-                      | "featured"
-                      | "price-asc"
-                      | "price-desc"
-                      | "rating",
-                  )
-                }
-                className="h-10 rounded-lg border border-neutral-200 bg-white px-3 pr-8 text-xs font-medium text-neutral-800 shadow-none appearance-none cursor-pointer focus:outline-none"
-              >
-                <option value="featured">Featured First</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
-              <LuChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400" />
-            </div>
-          </div>
         </div>
 
         {/* Category Filter Pills */}
         <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {CATEGORIES.map((cat) => {
-            const isSelected = selectedCategory === cat;
+          {categories.map((cat) => {
+            const isSelected =
+              selectedCategory.toLowerCase() === cat.toLowerCase();
             return (
               <button
                 key={cat}
@@ -199,15 +224,21 @@ function ProductsContent() {
       {/* Results Count & Status */}
       <div className="mb-6 flex items-center justify-between text-xs text-neutral-500">
         <p>
-          Showing{" "}
-          <span className="font-medium text-neutral-900">
-            {displayedProducts.length}
-          </span>{" "}
-          of{" "}
-          <span className="font-medium text-neutral-900">
-            {sortedProducts.length}
-          </span>{" "}
-          products
+          {isLoading ? (
+            <span>Loading live collection...</span>
+          ) : (
+            <>
+              Showing{" "}
+              <span className="font-medium text-neutral-900">
+                {displayedProducts.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-medium text-neutral-900">
+                {filteredProducts.length}
+              </span>{" "}
+              products
+            </>
+          )}
         </p>
 
         {(searchQuery || selectedCategory !== "All" || filterPreorderOnly) && (
@@ -222,8 +253,14 @@ function ProductsContent() {
         )}
       </div>
 
-      {/* Product Grid */}
-      {sortedProducts.length === 0 ? (
+      {/* Product Grid / Skeleton */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <ProductSkeleton key={idx} />
+          ))}
+        </div>
+      ) : filteredProducts.length === 0 ? (
         <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50/50 p-12 text-center">
           <h3 className="text-base font-medium text-neutral-900">
             No products found
@@ -251,7 +288,7 @@ function ProductsContent() {
       )}
 
       {/* Load More Button */}
-      {hasMore && (
+      {!isLoading && hasMore && (
         <div className="mt-12 text-center">
           <Button
             size="lg"

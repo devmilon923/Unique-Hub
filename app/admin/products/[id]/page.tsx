@@ -421,10 +421,11 @@ export default function AdminProductDetailsPage({ params }: PageProps) {
                 </div>
 
                 <div>
-                  <dt className="text-amber-800/80 text-[11px]">Lots Reserved</dt>
+                  <dt className="text-amber-800/80 text-[11px]">
+                    Pre-Order Lots (Color Stock)
+                  </dt>
                   <dd className="font-medium text-amber-950 mt-0.5">
-                    {product.preOrderDetails.fillLots || 0} /{" "}
-                    {product.preOrderDetails.totalLots || 0}
+                    {totalStock} units across {product.color?.length || 0} colors
                   </dd>
                 </div>
               </dl>

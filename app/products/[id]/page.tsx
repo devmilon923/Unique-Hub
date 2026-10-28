@@ -1,28 +1,39 @@
 import React from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { PRODUCTS, getProductById, getRelatedProducts } from "@/data/products";
+import { Product } from "@/data/products";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/sections/Footer";
 import { ProductDetailsView } from "@/components/products/ProductDetailsView";
 import { LuArrowLeft, LuPackageSearch } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { productApi } from "@/lib/productApi";
+import { adaptProductItem } from "@/lib/productAdapter";
+
+export const instant = false;
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  return PRODUCTS.map((product) => ({
-    id: product.id,
-  }));
+async function resolveProduct(idOrSlug: string): Promise<Product | null> {
+  try {
+    const apiProduct = await productApi.getBySlugOrId(idOrSlug);
+    if (apiProduct && apiProduct._id) {
+      return adaptProductItem(apiProduct);
+    }
+  } catch (err) {
+    console.error(`Failed to resolve product [${idOrSlug}]:`, err);
+  }
+
+  return null;
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await resolveProduct(id);
 
   if (!product) {
     return {
@@ -33,7 +44,7 @@ export async function generateMetadata({
 
   return {
     title: `${product.name} | UniqueHub BD`,
-    description: `${product.description} Curated cross-border imports delivered to Bangladesh with all customs clearance included.`,
+    description: `${product.description?.slice(0, 150) || product.name} Curated cross-border imports delivered to Bangladesh with all customs clearance included.`,
     keywords: [
       product.name,
       product.category,
@@ -43,7 +54,7 @@ export async function generateMetadata({
     ],
     openGraph: {
       title: `${product.name} - UniqueHub`,
-      description: product.description,
+      description: product.description?.slice(0, 150) || product.name,
       type: "website",
     },
   };
@@ -51,7 +62,7 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await resolveProduct(id);
 
   if (!product) {
     return (
@@ -84,7 +95,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
     );
   }
 
-  const relatedProducts = getRelatedProducts(product, 4);
+  // Fetch real related products from server endpoint
+  const relatedRaw = await productApi.getRelated(
+    product.category,
+    product.id,
+    4
+  );
+  const relatedProducts = relatedRaw.map(adaptProductItem);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

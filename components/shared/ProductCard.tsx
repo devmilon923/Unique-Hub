@@ -26,7 +26,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   return (
     <Link
-      href={`/products/${product.id}`}
+      href={`/products/${product.slug || product.id}`}
       className={cn(
         "group flex flex-col transition-all duration-200 cursor-pointer block",
         className

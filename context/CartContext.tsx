@@ -11,9 +11,18 @@ export interface CartItem {
   unitPrice: number; // Base product.price + extraCost
 }
 
+export type CartDrawerStep = "cart" | "checkout" | "confirmed";
+
 interface CartContextType {
-  cartItems: CartItem[];
+  cartItems: CartItem[]; // Bucket items
+  checkoutItem: CartItem | null; // Single active product for checkout
+  setCheckoutItem: (item: CartItem | null) => void;
   addToCart: (
+    product: Product,
+    quantity?: number,
+    selectedVariation?: ProductVariation
+  ) => void;
+  buyNow: (
     product: Product,
     quantity?: number,
     selectedVariation?: ProductVariation
@@ -25,6 +34,8 @@ interface CartContextType {
   subtotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  drawerStep: CartDrawerStep;
+  setDrawerStep: (step: CartDrawerStep) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -59,9 +70,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return [];
   });
 
+  const [checkoutItem, setCheckoutItem] = useState<CartItem | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [drawerStep, setDrawerStep] = useState<CartDrawerStep>("cart");
 
-  // Sync to localStorage when cart items change
+  // Sync bucket items to localStorage
   useEffect(() => {
     try {
       localStorage.setItem("uniquehub_cart", JSON.stringify(cartItems));
@@ -75,7 +88,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     quantity: number = 1,
     selectedVariation?: ProductVariation
   ) => {
-    // If no variation provided, pick the first available variation if one exists
     const effectiveVariation =
       selectedVariation ||
       (product.variation && product.variation.find((v) => v.isAvailable)) ||
@@ -108,6 +120,37 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         },
       ];
     });
+  };
+
+  /**
+   * Buy Now opens checkout strictly for ONE item (one order per request)
+   */
+  const buyNow = (
+    product: Product,
+    quantity: number = 1,
+    selectedVariation?: ProductVariation
+  ) => {
+    const effectiveVariation =
+      selectedVariation ||
+      (product.variation && product.variation.find((v) => v.isAvailable)) ||
+      product.variation?.[0];
+
+    const unitPrice =
+      product.price + (effectiveVariation?.extraCost || 0);
+
+    const item: CartItem = {
+      id: effectiveVariation
+        ? `${product.id}-${effectiveVariation.color}`
+        : product.id,
+      product,
+      quantity,
+      selectedVariation: effectiveVariation,
+      unitPrice,
+    };
+
+    setCheckoutItem(item);
+    setDrawerStep("checkout");
+    setIsCartOpen(true);
   };
 
   const removeFromCart = (identifier: string) => {
@@ -147,7 +190,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider
       value={{
         cartItems,
+        checkoutItem,
+        setCheckoutItem,
         addToCart,
+        buyNow,
         removeFromCart,
         updateQuantity,
         clearCart,
@@ -155,6 +201,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         subtotal,
         isCartOpen,
         setIsCartOpen,
+        drawerStep,
+        setDrawerStep,
       }}
     >
       {children}

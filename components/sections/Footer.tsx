@@ -186,6 +186,11 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/track" className="hover:text-neutral-900 transition-colors font-medium text-neutral-800">
+                    Track Order
+                  </Link>
+                </li>
+                <li>
                   <Link href="/products?filter=preorder" className="hover:text-neutral-900 transition-colors">
                     Pre-Order Drops
                   </Link>

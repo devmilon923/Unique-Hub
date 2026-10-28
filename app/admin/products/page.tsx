@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   productApi,
+  ProductFilterQuery,
   ProductItem,
   ProductPagination,
   ProductStatus,
@@ -14,6 +15,7 @@ import {
   LuPlus,
   LuRefreshCw,
   LuSearch,
+  LuX,
   LuPencil,
   LuTrash2,
   LuEye,
@@ -42,7 +44,21 @@ export default function AdminProductsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  // Debounce search input to avoid spamming server per keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset to page 1 whenever filters or search query change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter, categoryFilter]);
 
   const [feedback, setFeedback] = useState<{
     type: "success" | "error";
@@ -54,7 +70,7 @@ export default function AdminProductsPage() {
   const refreshList = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      const queryParams: Record<string, string | number> = {
+      const queryParams: ProductFilterQuery = {
         page,
         limit: 10,
       };
@@ -63,6 +79,9 @@ export default function AdminProductsPage() {
       }
       if (categoryFilter.trim()) {
         queryParams.category = categoryFilter.trim();
+      }
+      if (debouncedSearch.trim()) {
+        queryParams.search = debouncedSearch.trim();
       }
 
       const data = await productApi.getAll(queryParams);
@@ -79,12 +98,12 @@ export default function AdminProductsPage() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [page, statusFilter, categoryFilter]);
+  }, [page, statusFilter, categoryFilter, debouncedSearch]);
 
   useEffect(() => {
     let active = true;
 
-    const queryParams: Record<string, string | number> = {
+    const queryParams: ProductFilterQuery = {
       page,
       limit: 10,
     };
@@ -93,6 +112,9 @@ export default function AdminProductsPage() {
     }
     if (categoryFilter.trim()) {
       queryParams.category = categoryFilter.trim();
+    }
+    if (debouncedSearch.trim()) {
+      queryParams.search = debouncedSearch.trim();
     }
 
     productApi
@@ -122,7 +144,7 @@ export default function AdminProductsPage() {
     return () => {
       active = false;
     };
-  }, [page, statusFilter, categoryFilter]);
+  }, [page, statusFilter, categoryFilter, debouncedSearch]);
 
   const handleDelete = async () => {
     if (!productToDelete) return;
@@ -153,16 +175,8 @@ export default function AdminProductsPage() {
     }
   };
 
-  const displayedProducts = products.filter((p) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase().trim();
-    return (
-      p.name.toLowerCase().includes(q) ||
-      p.slug.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q) ||
-      p.Importer.toLowerCase().includes(q)
-    );
-  });
+  // Client-level search logic removed: Products are returned pre-filtered from server!
+  const displayedProducts = products;
 
   const getStatusBadge = (status: ProductStatus) => {
     switch (status) {
@@ -261,11 +275,21 @@ export default function AdminProductsPage() {
           <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400" />
           <Input
             type="text"
-            placeholder="Search by name, slug, importer..."
+            placeholder="Search products by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 text-xs"
+            className="pl-9 pr-8 h-9 text-xs"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
+              title="Clear search"
+            >
+              <LuX className="size-3.5" />
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -486,9 +510,8 @@ export default function AdminProductsPage() {
                                   : "TBD"}
                               </span>
                             </div>
-                            <div className="text-[10px] text-neutral-500">
-                              Lots: {product.preOrderDetails.fillLots || 0} /{" "}
-                              {product.preOrderDetails.totalLots || 0}
+                            <div className="text-[10px] text-amber-800 font-medium">
+                              {totalStock} lots (colors)
                             </div>
                           </div>
                         ) : (

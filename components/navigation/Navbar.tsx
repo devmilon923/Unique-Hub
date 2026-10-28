@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 import {
   LuCompass,
   LuShoppingBag,
@@ -12,15 +11,14 @@ import {
   LuX,
   LuPackage,
   LuArrowRight,
-  LuShieldCheck,
+  LuTruck,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { totalCount, setIsCartOpen } = useCart();
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { totalCount, setIsCartOpen, setDrawerStep } = useCart();
   const pathname = usePathname();
 
   // Close mobile drawer upon route transitions
@@ -107,28 +105,56 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Right Controls: Integrated Search Trigger, Dynamic Cart, and Mobile Menu */}
+          {/* Right Controls: Find Product, Track Order, Bucket, and Mobile Menu */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Find Product Button */}
             <Link
               href="/products"
-              className="group flex size-8 sm:size-auto sm:px-3.5 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-neutral-200/90 bg-neutral-50/80 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950 text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 shadow-2xs"
+              className={cn(
+                "group flex size-8 sm:size-auto sm:px-3.5 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-neutral-200/90 bg-neutral-50/80 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950 text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 shadow-2xs",
+                pathname.startsWith("/products") && "bg-neutral-100 border-neutral-300 text-neutral-950 font-semibold"
+              )}
               aria-label="Find Product"
             >
               <LuCompass className="size-4 sm:size-3.5 text-neutral-600 group-hover:text-neutral-950 group-hover:rotate-45 transition-transform duration-200" />
               <span className="hidden sm:inline">Find Product</span>
             </Link>
 
+            {/* Track Order Action Button */}
+            <Link
+              href="/track"
+              className={cn(
+                "group flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border transition-all duration-150 text-xs font-medium active:scale-95 cursor-pointer shadow-2xs",
+                pathname.startsWith("/track")
+                  ? "bg-neutral-900 text-white border-neutral-900"
+                  : "border-neutral-200/90 bg-white hover:bg-neutral-50 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950"
+              )}
+              aria-label="Track Your Order"
+            >
+              <LuTruck
+                className={cn(
+                  "size-4 sm:size-3.5 transition-colors",
+                  pathname.startsWith("/track")
+                    ? "text-white"
+                    : "text-neutral-600 group-hover:text-neutral-950"
+                )}
+              />
+              <span className="hidden sm:inline">Track Order</span>
+            </Link>
+
             {/* Cart Trigger with Responsive Badge */}
             <button
               type="button"
-              onClick={() => setIsCartOpen(true)}
+              onClick={() => {
+                setDrawerStep("cart");
+                setIsCartOpen(true);
+              }}
               className="group relative flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-neutral-200/90 bg-white hover:bg-neutral-50 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950 transition-all duration-150 text-xs font-medium active:scale-95 cursor-pointer shadow-2xs"
-              aria-label={`View Cart, ${totalCount} items`}
+              aria-label={`View Bucket, ${totalCount} items`}
             >
               <LuShoppingBag className="size-4 text-neutral-700 group-hover:text-neutral-950 transition-colors" />
               <span className="hidden sm:inline font-medium text-neutral-700 group-hover:text-neutral-950">
-                Cart
+                Bucket
               </span>
               {totalCount > 0 ? (
                 <span className="absolute -top-1 -right-1 sm:static sm:top-auto sm:right-auto flex items-center justify-center min-w-4 sm:min-w-[18px] h-4 sm:h-[18px] px-1 rounded-full bg-neutral-900 text-[9px] sm:text-[10px] font-mono font-bold text-white tabular-nums shadow-xs">
@@ -140,18 +166,6 @@ export function Navbar() {
                 </span>
               )}
             </button>
-
-            {/* Admin Portal Indicator for Authenticated Admins */}
-            {isAuthenticated && isAdmin && (
-              <Link
-                href="/admin"
-                className="group flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 rounded-xl border border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800 transition-all duration-150 text-xs font-medium active:scale-95 shadow-2xs"
-                aria-label="Go to Admin Dashboard"
-              >
-                <LuShieldCheck className="size-3.5" />
-                <span className="hidden sm:inline">Admin</span>
-              </Link>
-            )}
 
             {/* Mobile Menu Toggle Button */}
             <button
@@ -204,15 +218,15 @@ export function Navbar() {
                 <LuArrowRight className="size-3.5 text-neutral-400" />
               </Link>
               <Link
-                href={isAuthenticated && isAdmin ? "/admin" : "/admin/login"}
+                href="/track"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between rounded-xl hover:bg-neutral-50 px-3.5 py-2 text-xs font-medium text-neutral-600 transition-colors"
+                className="flex items-center justify-between rounded-xl bg-neutral-50 hover:bg-neutral-100 px-3.5 py-2.5 text-xs font-medium text-neutral-800 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <LuShieldCheck className="size-3.5 text-neutral-500" />
-                  <span>{isAuthenticated && isAdmin ? "Admin Dashboard" : "Admin Sign In"}</span>
+                  <LuTruck className="size-3.5 text-neutral-600" />
+                  <span>Track Order</span>
                 </div>
-                <LuArrowRight className="size-3 text-neutral-400" />
+                <LuArrowRight className="size-3.5 text-neutral-400" />
               </Link>
             </div>
           </div>

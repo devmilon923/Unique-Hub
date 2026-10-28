@@ -4,13 +4,16 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { productApi, ProductItem } from "@/lib/productApi";
 import {
-  productApi,
-  ProductItem,
-} from "@/lib/productApi";
+  orderApi,
+  OrderRecord,
+  ORDER_STATUS_CONFIG,
+} from "@/lib/orderApi";
 import {
   LuRefreshCw,
   LuBoxes,
+  LuShoppingBag,
   LuExternalLink,
   LuCircleCheck,
   LuLogOut,
@@ -18,6 +21,7 @@ import {
   LuPlus,
   LuArrowRight,
 } from "react-icons/lu";
+import { cn } from "@/lib/utils";
 
 export default function AdminDashboardPage() {
   const { user, refreshProfile, logout } = useAuth();
@@ -29,26 +33,35 @@ export default function AdminDashboardPage() {
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
+  // Orders preview state
+  const [recentOrders, setRecentOrders] = useState<OrderRecord[]>([]);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+
+  const loadData = async () => {
+    try {
+      const [prodRes, ordRes] = await Promise.allSettled([
+        productApi.getAll({ limit: 5 }),
+        orderApi.getAll({ limit: 5 }),
+      ]);
+
+      if (prodRes.status === "fulfilled") {
+        setRecentProducts(prodRes.value.result || []);
+        setTotalProducts(prodRes.value.pagination?.totalData || 0);
+      }
+
+      if (ordRes.status === "fulfilled") {
+        setRecentOrders(ordRes.value.orders || []);
+        setTotalOrders(ordRes.value.pagination?.totalData || 0);
+      }
+    } finally {
+      setIsLoadingProducts(false);
+      setIsLoadingOrders(false);
+    }
+  };
+
   useEffect(() => {
-    let active = true;
-
-    productApi
-      .getAll({ limit: 5 })
-      .then((data) => {
-        if (!active) return;
-        setRecentProducts(data.result || []);
-        setTotalProducts(data.pagination?.totalData || 0);
-      })
-      .catch(() => {
-        // Non-blocking
-      })
-      .finally(() => {
-        if (active) setIsLoadingProducts(false);
-      });
-
-    return () => {
-      active = false;
-    };
+    loadData();
   }, []);
 
   const handleRefresh = async () => {
@@ -56,12 +69,10 @@ export default function AdminDashboardPage() {
     setFeedback(null);
     try {
       const updated = await refreshProfile();
-      const data = await productApi.getAll({ limit: 5 });
-      setRecentProducts(data.result || []);
-      setTotalProducts(data.pagination?.totalData || 0);
+      await loadData();
       setFeedback(
         updated
-          ? "Session and inventory data refreshed."
+          ? "Session, products, and order statistics refreshed."
           : "Session expired. Please log in again."
       );
     } catch {
@@ -81,7 +92,7 @@ export default function AdminDashboardPage() {
             Admin Console
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Manage UniqueHub products, pricing, and catalog.
+            Manage UniqueHub products, pricing, orders, and logistics.
           </p>
         </div>
 
@@ -97,6 +108,17 @@ export default function AdminDashboardPage() {
             <span>{isRefreshing ? "Checking..." : "Refresh"}</span>
           </Button>
 
+          <Link href="/admin/orders">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl h-8.5 text-xs gap-1.5 border-neutral-200 hover:bg-neutral-100 cursor-pointer"
+            >
+              <LuShoppingBag className="size-3.5" />
+              <span>Orders ({totalOrders})</span>
+            </Button>
+          </Link>
+
           <Link href="/admin/products/new">
             <Button
               size="sm"
@@ -104,17 +126,6 @@ export default function AdminDashboardPage() {
             >
               <LuPlus className="size-3.5" />
               <span>Add Product</span>
-            </Button>
-          </Link>
-
-          <Link href="/admin/products">
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl h-8.5 text-xs gap-1.5 border-neutral-200 hover:bg-neutral-100 cursor-pointer"
-            >
-              <LuBoxes className="size-3.5" />
-              <span>Products</span>
             </Button>
           </Link>
         </div>
@@ -129,6 +140,7 @@ export default function AdminDashboardPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Metric 1: Products */}
         <div className="rounded-2xl border border-neutral-200/90 bg-card p-5 shadow-subtle">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-neutral-500">
@@ -150,36 +162,33 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
 
+        {/* Metric 2: Orders */}
         <div className="rounded-2xl border border-neutral-200/90 bg-card p-5 shadow-subtle">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-neutral-500">
-              Product Actions
+              Total Customer Orders
             </span>
-            <div className="size-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <LuPlus className="size-4" />
+            <div className="size-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <LuShoppingBag className="size-4" />
             </div>
           </div>
-          <div className="text-sm font-semibold text-neutral-950 mt-2">
-            Manage Catalog
+          <div className="text-2xl font-extrabold text-neutral-950 mt-2">
+            {isLoadingOrders ? "—" : totalOrders}
           </div>
-          <div className="flex items-center gap-2 mt-2">
-            <Link href="/admin/products/new">
-              <span className="text-[11px] px-2 py-0.5 rounded-md bg-neutral-900 text-white font-medium hover:bg-neutral-800">
-                + New Product
-              </span>
-            </Link>
-            <Link href="/admin/products">
-              <span className="text-[11px] px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700 font-medium hover:bg-neutral-200">
-                Inventory List
-              </span>
-            </Link>
-          </div>
+          <Link
+            href="/admin/orders"
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-600 hover:text-neutral-950 mt-2 transition-colors"
+          >
+            <span>Manage customer orders</span>
+            <LuArrowRight className="size-3" />
+          </Link>
         </div>
 
+        {/* Metric 3: Storefront & Tracking */}
         <div className="rounded-2xl border border-neutral-200/90 bg-card p-5 shadow-subtle">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-neutral-500">
-              Storefront Status
+              Storefront & Portals
             </span>
             <div className="size-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
               <LuExternalLink className="size-4" />
@@ -188,14 +197,121 @@ export default function AdminDashboardPage() {
           <div className="text-sm font-semibold text-neutral-950 mt-2">
             Active Storefront
           </div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-600 hover:text-neutral-950 mt-2 transition-colors"
-          >
-            <span>Browse customer view</span>
-            <LuArrowRight className="size-3" />
+          <div className="flex items-center gap-3 mt-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-600 hover:text-neutral-950 transition-colors"
+            >
+              <span>Customer Shop</span>
+              <LuArrowRight className="size-3" />
+            </Link>
+            <span className="text-neutral-300">•</span>
+            <Link
+              href="/track"
+              target="_blank"
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-600 hover:text-neutral-950 transition-colors"
+            >
+              <span>Track Order</span>
+              <LuArrowRight className="size-3" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Orders Preview */}
+      <div className="rounded-2xl border border-neutral-200/90 bg-card overflow-hidden shadow-subtle">
+        <div className="p-4 sm:p-5 border-b border-neutral-100 flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-neutral-950">
+              Recent Orders
+            </h2>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Latest incoming purchases and deliveries.
+            </p>
+          </div>
+          <Link href="/admin/orders">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl h-8 text-xs border-neutral-200 hover:bg-neutral-100 cursor-pointer"
+            >
+              <span>View All Orders</span>
+              <LuArrowRight className="size-3 ml-1" />
+            </Button>
           </Link>
         </div>
+
+        {isLoadingOrders ? (
+          <div className="py-10 text-center text-xs text-neutral-500">
+            <LuRefreshCw className="size-4 animate-spin mx-auto mb-1 text-neutral-400" />
+            Loading recent orders...
+          </div>
+        ) : recentOrders.length === 0 ? (
+          <div className="py-10 text-center text-xs text-neutral-500">
+            No customer orders placed yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-neutral-100 bg-neutral-50/75 text-neutral-500 font-medium">
+                  <th className="py-2.5 px-4">Invoice</th>
+                  <th className="py-2.5 px-4">Customer</th>
+                  <th className="py-2.5 px-4">Location</th>
+                  <th className="py-2.5 px-4">Total</th>
+                  <th className="py-2.5 px-4">Status</th>
+                  <th className="py-2.5 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {recentOrders.map((ord) => (
+                  <tr key={ord._id} className="hover:bg-neutral-50/50">
+                    <td className="py-3 px-4 font-mono font-bold text-neutral-900">
+                      <Link
+                        href={`/admin/orders/${ord._id}`}
+                        className="hover:underline"
+                      >
+                        #{ord._id.slice(-6)}
+                      </Link>
+                    </td>
+                    <td className="py-3 px-4 text-neutral-900 font-medium">
+                      {ord.user?.name}
+                      <span className="block text-[11px] font-mono text-neutral-500">
+                        {ord.user?.phone}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-neutral-600 capitalize">
+                      {ord.user?.city}, {ord.user?.division}
+                    </td>
+                    <td className="py-3 px-4 font-mono font-semibold text-neutral-900">
+                      ৳{ord.totalAmount?.toLocaleString("en-BD")}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border capitalize",
+                          ORDER_STATUS_CONFIG[ord.status]?.badgeVariant ||
+                            "bg-neutral-100 text-neutral-700"
+                        )}
+                      >
+                        {ORDER_STATUS_CONFIG[ord.status]?.label || ord.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <Link
+                        href={`/admin/orders/${ord._id}`}
+                        className="text-[11px] font-medium text-neutral-600 hover:text-neutral-950 hover:underline"
+                      >
+                        Details →
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Recent Products Table Preview */}
@@ -259,12 +375,12 @@ export default function AdminDashboardPage() {
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="capitalize font-medium text-neutral-700">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-neutral-100 text-neutral-800 uppercase">
                         {p.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-neutral-900">
-                      ৳{(p.salePrice ?? 0).toLocaleString()}
+                    <td className="py-3 px-4 font-mono font-medium text-neutral-900">
+                      ৳{p.salePrice?.toLocaleString("en-BD")}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <Link

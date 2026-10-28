@@ -9,6 +9,7 @@ import {
   LuPackage,
   LuLayoutDashboard,
   LuBoxes,
+  LuShoppingBag,
   LuExternalLink,
   LuLogOut,
   LuShieldCheck,
@@ -35,6 +36,7 @@ export function AdminNav() {
 
   const navItems = [
     { name: "Overview", href: "/admin", icon: LuLayoutDashboard },
+    { name: "Orders", href: "/admin/orders", icon: LuShoppingBag },
     { name: "Products", href: "/admin/products", icon: LuBoxes },
   ];
 
