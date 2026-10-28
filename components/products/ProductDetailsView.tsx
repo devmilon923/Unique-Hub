@@ -21,6 +21,7 @@ import {
   LuShieldCheck,
   LuTruck,
   LuArrowRight,
+  LuSparkles,
 } from "react-icons/lu";
 
 interface ProductDetailsViewProps {
@@ -49,14 +50,19 @@ export function ProductDetailsView({
 
   // Dynamic price calculation
   const extraCost = selectedVariation?.extraCost || 0;
-  const unitPrice = product.price + extraCost;
+  const isPreOrder = Boolean(product.isPreOrder) || product.status === "pre";
+  const fullUnitPrice = product.price + extraCost;
+  const unitPrice = isPreOrder
+    ? Math.round(fullUnitPrice * 0.5)
+    : fullUnitPrice;
   const totalPrice = unitPrice * quantity;
   const originalUnitPrice = product.originalPrice
     ? product.originalPrice + extraCost
     : undefined;
-  const discountPercent = originalUnitPrice
-    ? Math.round(((originalUnitPrice - unitPrice) / originalUnitPrice) * 100)
-    : null;
+  const discountPercent =
+    !isPreOrder && originalUnitPrice && originalUnitPrice > fullUnitPrice
+      ? Math.round(((originalUnitPrice - fullUnitPrice) / originalUnitPrice) * 100)
+      : null;
 
   const isCurrentVariationAvailable = selectedVariation
     ? selectedVariation.isAvailable
@@ -188,25 +194,84 @@ export function ProductDetailsView({
               </p>
             </div>
 
-            {/* Price Section with Integrated Savings Badge */}
+            {/* Price Section with Integrated Savings Badge & Pre-Order 50% Policy */}
             <div className="border-t border-neutral-200/80 pt-5">
               <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+                <span className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 font-mono">
                   ৳{unitPrice.toLocaleString("en-BD")}
                 </span>
 
-                {originalUnitPrice && originalUnitPrice > unitPrice && (
-                  <span className="text-base sm:text-lg text-neutral-400 line-through">
-                    ৳{originalUnitPrice.toLocaleString("en-BD")}
+                {isPreOrder && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 text-white px-2.5 py-0.5 text-[11px] font-medium shadow-2xs">
+                    <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Pay 50% Now</span>
                   </span>
                 )}
 
-                {discountPercent && (
+                {isPreOrder ? (
+                  <span className="text-xs sm:text-sm text-neutral-500">
+                    Full Price:{" "}
+                    <strong className="text-neutral-800 font-semibold font-mono">
+                      ৳{fullUnitPrice.toLocaleString("en-BD")}
+                    </strong>
+                  </span>
+                ) : (
+                  originalUnitPrice && originalUnitPrice > unitPrice && (
+                    <span className="text-base sm:text-lg text-neutral-400 line-through">
+                      ৳{originalUnitPrice.toLocaleString("en-BD")}
+                    </span>
+                  )
+                )}
+
+                {!isPreOrder && discountPercent && (
                   <span className="rounded-md bg-rose-50 border border-rose-200/80 px-2.5 py-0.5 text-xs font-semibold text-rose-700">
                     Save {discountPercent}%
                   </span>
                 )}
               </div>
+
+              {/* Polished Pre-Order Payment Breakdown */}
+              {isPreOrder && (
+                <div className="mt-3.5 rounded-2xl border border-neutral-200/90 bg-neutral-50/70 p-3 sm:p-3.5 space-y-3">
+                  <div className="grid grid-cols-2 divide-x divide-neutral-200">
+                    {/* 1. Pay Today */}
+                    <div className="pr-3">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                        1. Pay Today (50%)
+                      </span>
+                      <div className="mt-0.5 font-mono text-base sm:text-lg font-bold text-neutral-900">
+                        ৳{unitPrice.toLocaleString("en-BD")}
+                      </div>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">
+                        Advance to reserve
+                      </p>
+                    </div>
+
+                    {/* 2. On Delivery */}
+                    <div className="pl-3">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                        2. On Delivery (50%)
+                      </span>
+                      <div className="mt-0.5 font-mono text-base sm:text-lg font-bold text-neutral-900">
+                        ৳{(fullUnitPrice - unitPrice).toLocaleString("en-BD")}
+                      </div>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">
+                        Cash on Delivery (COD)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-neutral-200/70 text-xs">
+                    <span className="inline-flex items-center gap-1.5 text-neutral-600 font-medium text-[11px]">
+                      <LuTruck className="size-3.5 text-emerald-600 shrink-0" />
+                      <span>Nationwide Doorstep Delivery</span>
+                    </span>
+                    <span className="font-semibold text-emerald-700 uppercase tracking-wider text-[10px] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80">
+                      Free
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Color Variation Swatches */}
@@ -390,7 +455,9 @@ export function ProductDetailsView({
                 >
                   <LuZap className="size-4 text-amber-400 fill-amber-400" />
                   <span>
-                    {product.isPreOrder ? "Pre-Order Now" : "Buy Now"}
+                    {isPreOrder
+                      ? `Pre-Order Now • Pay ৳${totalPrice.toLocaleString("en-BD")}`
+                      : "Buy Now"}
                   </span>
                 </Button>
               </div>

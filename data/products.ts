@@ -37,18 +37,74 @@ export interface Product {
   specs?: Record<string, string>;
 }
 
-export const CATEGORIES = [
-  "All",
-  "Electronics",
-  "Accessories",
-  "Audio",
-  "Computing",
-  "Smart Home",
-  "Gadgets",
-  "Wearables",
+export const PRODUCT_CATEGORIES = [
+  "mens",
+  "women",
+  "baby",
+  "gadgets",
+  "lights",
 ] as const;
 
-export type CategoryType = string;
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
+export const CATEGORY_LABELS: Record<ProductCategory, string> = {
+  mens: "Mens",
+  women: "Women",
+  baby: "Baby",
+  gadgets: "Gadgets",
+  lights: "Lights",
+};
+
+export const CATEGORIES = [
+  "All",
+  "Mens",
+  "Women",
+  "Baby",
+  "Gadgets",
+  "Lights",
+] as const;
+
+export type CategoryType = (typeof CATEGORIES)[number] | string;
+
+/**
+ * Normalizes any category string (mixed case, singular, plural, punctuation)
+ * into the server-canonical lowercase category key.
+ * e.g., "Mens", "Men's", "MEN" -> "mens"
+ *       "Women", "Women's"     -> "women"
+ *       "Baby", "Babies"       -> "baby"
+ *       "Gadget", "Gadgets"    -> "gadgets"
+ *       "Light", "Lights"      -> "lights"
+ */
+export function normalizeCategory(category: string): string {
+  if (!category) return "";
+  const clean = category.trim().toLowerCase();
+  if (/^men('?s)?$/i.test(clean) || clean === "mens" || clean === "men") return "mens";
+  if (/^wom[ae]n('?s)?$/i.test(clean) || clean === "women" || clean === "womens") return "women";
+  if (/^bab(y|ies)?$/i.test(clean) || clean === "baby") return "baby";
+  if (/^gadgets?$/i.test(clean) || clean === "gadget" || clean === "gadgets") return "gadgets";
+  if (/^lights?$/i.test(clean) || clean === "light" || clean === "lights" || clean === "lighting") return "lights";
+  return clean;
+}
+
+/**
+ * Formats a category string for UI display.
+ */
+export function formatCategory(category: string): string {
+  if (!category) return "";
+  const normalized = normalizeCategory(category) as ProductCategory;
+  if (CATEGORY_LABELS[normalized]) {
+    return CATEGORY_LABELS[normalized];
+  }
+  return category.charAt(0).toUpperCase() + category.slice(1);
+}
+
+/**
+ * Checks whether a given string corresponds to one of the 5 supported categories.
+ */
+export function isValidCategory(category: string): boolean {
+  const norm = normalizeCategory(category);
+  return PRODUCT_CATEGORIES.includes(norm as ProductCategory);
+}
 
 /**
  * Empty product catalog. Real products are loaded directly

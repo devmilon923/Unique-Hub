@@ -1,5 +1,5 @@
 import { ProductItem } from "./productApi";
-import { Product, ProductVariation } from "@/data/products";
+import { Product, ProductVariation, formatCategory } from "@/data/products";
 
 /**
  * Transforms a backend ProductItem into the UI Product structure
@@ -42,11 +42,13 @@ export function adaptProductItem(item: ProductItem): Product {
     badgeVariant = "discount";
   }
 
+  const displayCategory = formatCategory(item.category || "General");
+
   return {
     id: item._id,
     slug: item.slug || item._id,
     name: item.name,
-    category: item.category || "General",
+    category: displayCategory,
     price: item.salePrice,
     originalPrice: hasDiscount ? item.regularPrice : undefined,
     rating: 4.9,
@@ -87,7 +89,7 @@ export function adaptProductItem(item: ProductItem): Product {
         })
       : "10-15 Business Days",
     specs: {
-      Category: item.category,
+      Category: displayCategory,
       Importer: item.Importer || "UniqueHub Verified Importer",
       Delivery: item.deliveryHeading || "Direct shipping",
       Status: (item.status || "live").toUpperCase(),

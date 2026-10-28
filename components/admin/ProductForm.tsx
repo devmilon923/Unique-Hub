@@ -19,7 +19,9 @@ import {
   LuSparkles,
   LuArrowLeft,
   LuCalendar,
+  LuChevronDown,
 } from "react-icons/lu";
+import { normalizeCategory, isValidCategory } from "@/data/products";
 import AdminProductDescription from "./Editor";
 import {
   ProductDescriptionPreview,
@@ -35,14 +37,12 @@ interface ProductFormProps {
   error?: string | null;
 }
 
-const CATEGORY_SUGGESTIONS = [
-  "Electronics",
-  "Accessories",
-  "Audio",
-  "Computing",
-  "Smart Home",
-  "Gadgets",
-  "Wearables",
+const CATEGORY_OPTIONS = [
+  { label: "Mens", value: "mens" },
+  { label: "Women", value: "women" },
+  { label: "Baby", value: "baby" },
+  { label: "Gadgets", value: "gadgets" },
+  { label: "Lights", value: "lights" },
 ];
 
 const STATUS_OPTIONS: { label: string; value: ProductStatus }[] = [
@@ -65,7 +65,9 @@ export function ProductForm({
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(
     Boolean(initialData?.slug)
   );
-  const [category, setCategory] = useState(initialData?.category || "");
+  const [category, setCategory] = useState(
+    initialData?.category ? normalizeCategory(initialData.category) : ""
+  );
   const [importer, setImporter] = useState(
     initialData?.Importer || "Tech Imports Ltd."
   );
@@ -273,10 +275,23 @@ export function ProductForm({
       }
     }
 
+    // Category validation
+    if (!category.trim()) {
+      setValidationError("Category is required. Please select a category.");
+      return;
+    }
+    const normalizedCategory = normalizeCategory(category);
+    if (!isValidCategory(normalizedCategory)) {
+      setValidationError(
+        "Category must be one of: Mens, Women, Baby, Gadgets, Lights."
+      );
+      return;
+    }
+
     const payload: CreateProductInput = {
       name: name.trim(),
       slug: slug.trim(),
-      category: category.trim(),
+      category: normalizedCategory,
       Importer: importer.trim(),
       deliveryHeading: deliveryHeading.trim(),
       regularPrice: regPriceNum,
@@ -395,28 +410,38 @@ export function ProductForm({
             >
               Category <span className="text-destructive">*</span>
             </label>
-            <Input
-              id="prod-category"
-              type="text"
-              required
-              placeholder="e.g. Electronics"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="text-xs h-9.5"
-            />
-            <div className="flex flex-wrap gap-1 pt-1">
-              {CATEGORY_SUGGESTIONS.map((cat) => (
+            <div className="relative">
+              <select
+                id="prod-category"
+                required
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full appearance-none rounded-xl border border-neutral-200 bg-white pl-3 pr-8 h-9.5 text-xs font-medium text-neutral-800 shadow-2xs hover:border-neutral-300 focus:outline-none focus:ring-1 focus:ring-neutral-400 cursor-pointer transition-colors"
+              >
+                <option value="" disabled>
+                  Select category (Mens, Women, Baby, Gadgets, Lights)...
+                </option>
+                {CATEGORY_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <LuChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400" />
+            </div>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {CATEGORY_OPTIONS.map((opt) => (
                 <button
                   type="button"
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`text-[10px] px-2 py-0.5 rounded-md border transition-colors cursor-pointer ${
-                    category === cat
-                      ? "bg-neutral-900 text-white border-neutral-900"
-                      : "bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100"
+                  key={opt.value}
+                  onClick={() => setCategory(opt.value)}
+                  className={`text-[10px] px-2.5 py-1 rounded-lg border font-medium transition-all duration-150 cursor-pointer active:scale-95 ${
+                    category === opt.value
+                      ? "bg-neutral-900 text-white border-neutral-900 shadow-xs"
+                      : "bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100 hover:text-neutral-900"
                   }`}
                 >
-                  {cat}
+                  {opt.label}
                 </button>
               ))}
             </div>

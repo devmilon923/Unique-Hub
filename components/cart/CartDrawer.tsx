@@ -10,6 +10,7 @@ import {
   BANGLADESH_DIVISIONS,
   PaymentMethod,
   CreateOrderResult,
+  getDeliveryFee,
 } from "@/lib/orderApi";
 import { productApi } from "@/lib/productApi";
 import {
@@ -230,8 +231,15 @@ export function CartDrawer() {
       removeFromCart(activeCheckoutItem.product.id);
 
       const orderTotal =
-        (activeCheckoutItem.unitPrice || activeCheckoutItem.product.price) *
-        activeCheckoutItem.quantity;
+        res.totalAmount !== undefined
+          ? res.totalAmount
+          : (activeCheckoutItem.unitPrice || activeCheckoutItem.product.price) *
+              activeCheckoutItem.quantity +
+            getDeliveryFee(
+              division,
+              Boolean(activeCheckoutItem.product?.isPreOrder) ||
+                activeCheckoutItem.product?.status === "pre"
+            );
 
       setConfirmedOrder({
         result: res,
@@ -257,10 +265,17 @@ export function CartDrawer() {
     }
   };
 
-  const checkoutTotal = activeCheckoutItem
+  const isPreOrderCheckout =
+    Boolean(activeCheckoutItem?.product?.isPreOrder) ||
+    activeCheckoutItem?.product?.status === "pre";
+
+  const checkoutSubtotal = activeCheckoutItem
     ? (activeCheckoutItem.unitPrice || activeCheckoutItem.product.price) *
       activeCheckoutItem.quantity
     : 0;
+
+  const currentDeliveryFee = getDeliveryFee(division, isPreOrderCheckout);
+  const checkoutTotal = checkoutSubtotal + currentDeliveryFee;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -379,7 +394,38 @@ export function CartDrawer() {
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-neutral-500">Total Payable:</span>
+                  <span className="text-neutral-500">
+                    {confirmedOrder.result?.isPreOrder
+                      ? "50% Advance Paid:"
+                      : "Product Subtotal:"}
+                  </span>
+                  <span className="font-semibold text-neutral-900 font-mono">
+                    ৳{((confirmedOrder.result?.subtotal ?? (confirmedOrder.totalAmount - (confirmedOrder.result?.deliveryFee ?? 0)))).toLocaleString("en-BD")}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-neutral-500">Delivery Charge:</span>
+                  <span className="font-semibold text-neutral-900 font-mono">
+                    {confirmedOrder.result?.deliveryFee === 0 ? (
+                      <span className="text-emerald-600 font-semibold">FREE</span>
+                    ) : (
+                      `৳${confirmedOrder.result?.deliveryFee || 0}`
+                    )}
+                  </span>
+                </div>
+
+                {confirmedOrder.result?.isPreOrder && (
+                  <div className="flex items-center justify-between text-xs bg-amber-50 text-amber-900 p-2 rounded-lg border border-amber-200">
+                    <span>Remaining Due (50% COD):</span>
+                    <span className="font-bold font-mono">
+                      ৳{((confirmedOrder.result?.dueOnDelivery ?? confirmedOrder.result?.subtotal ?? 0)).toLocaleString("en-BD")}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between text-xs pt-1.5 border-t border-neutral-200/80">
+                  <span className="text-neutral-900 font-bold">Total Payable Now:</span>
                   <span className="font-bold text-neutral-900 font-mono text-sm">
                     ৳{confirmedOrder.totalAmount.toLocaleString("en-BD")}
                   </span>
@@ -697,18 +743,43 @@ export function CartDrawer() {
               </div>
 
               {/* Items Summary */}
-              <div className="rounded-xl bg-neutral-50 border border-neutral-200/70 p-3 space-y-1.5 text-xs">
+              <div className="rounded-xl bg-neutral-50 border border-neutral-200/70 p-3 space-y-2 text-xs">
                 <div className="flex justify-between text-neutral-600">
-                  <span>Product Price:</span>
-                  <span>৳{checkoutTotal.toLocaleString("en-BD")}</span>
+                  <span>
+                    {isPreOrderCheckout
+                      ? "Pre-Order Advance (50%):"
+                      : "Product Subtotal:"}
+                  </span>
+                  <span className="font-semibold text-neutral-900 font-mono">
+                    ৳{checkoutSubtotal.toLocaleString("en-BD")}
+                  </span>
                 </div>
+
+                {isPreOrderCheckout && (
+                  <div className="flex justify-between items-center text-[11px] bg-neutral-100/90 text-neutral-700 px-2.5 py-1.5 rounded-lg border border-neutral-200/80">
+                    <span className="font-medium">Due on Delivery (COD 50%):</span>
+                    <span className="font-bold font-mono text-neutral-900">
+                      ৳{checkoutSubtotal.toLocaleString("en-BD")}
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-neutral-600">
-                  <span>Delivery & Customs Duty:</span>
-                  <span className="text-emerald-600 font-medium">FREE</span>
+                  <span>Delivery Charge:</span>
+                  <span>
+                    {currentDeliveryFee === 0 ? (
+                      <span className="text-emerald-600 font-semibold">FREE (Pre-Order)</span>
+                    ) : (
+                      <span className="font-medium text-neutral-900 font-mono">
+                        ৳{currentDeliveryFee} ({division === "dhaka" ? "Dhaka" : "Outside Dhaka"})
+                      </span>
+                    )}
+                  </span>
                 </div>
-                <div className="flex justify-between font-bold text-neutral-900 pt-1.5 border-t border-neutral-200/80">
-                  <span>Total Amount:</span>
-                  <span className="font-mono">
+
+                <div className="flex justify-between font-bold text-neutral-900 pt-2 border-t border-neutral-200/80 text-sm">
+                  <span>Total Payable Now:</span>
+                  <span className="font-mono text-base">
                     ৳{checkoutTotal.toLocaleString("en-BD")}
                   </span>
                 </div>

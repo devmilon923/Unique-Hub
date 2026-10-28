@@ -25,11 +25,8 @@ export function AllProductsSection({ products = [] }: AllProductsSectionProps) {
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-              Full Collection
-            </span>
             <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
-              Handpicked Collection
+              Full Collection
             </h2>
             <p className="mt-1 text-sm text-neutral-500">
               Recent arrivals and imported innovations ready for dispatch across

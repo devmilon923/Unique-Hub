@@ -26,8 +26,10 @@ import {
   LuChevronRight,
   LuCalendar,
   LuImage,
+  LuChevronDown,
 } from "react-icons/lu";
 import Image from "next/image";
+import { formatCategory } from "@/data/products";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductItem[]>([]);
@@ -314,18 +316,25 @@ export default function AdminProductsPage() {
             ))}
           </div>
 
-          {/* Category Input Filter */}
-          <div className="w-36">
-            <Input
-              type="text"
-              placeholder="Category filter"
+          {/* Category Dropdown Filter */}
+          <div className="relative min-w-[140px]">
+            <select
               value={categoryFilter}
               onChange={(e) => {
                 setCategoryFilter(e.target.value);
                 setPage(1);
               }}
-              className="h-9 text-xs"
-            />
+              aria-label="Filter by category"
+              className="w-full appearance-none rounded-xl border border-neutral-200 bg-white pl-3 pr-8 h-9 text-xs font-medium text-neutral-800 shadow-2xs hover:border-neutral-300 focus:outline-none focus:ring-1 focus:ring-neutral-400 cursor-pointer transition-colors"
+            >
+              <option value="">All Categories</option>
+              <option value="mens">Mens</option>
+              <option value="women">Women</option>
+              <option value="baby">Baby</option>
+              <option value="gadgets">Gadgets</option>
+              <option value="lights">Lights</option>
+            </select>
+            <LuChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400" />
           </div>
         </div>
       </div>
@@ -437,8 +446,8 @@ export default function AdminProductsPage() {
 
                       {/* Category */}
                       <td className="py-3.5 px-4 align-top text-neutral-700">
-                        <span className="inline-block px-2 py-0.5 rounded-md bg-neutral-100 text-[11px] font-medium text-neutral-800">
-                          {product.category}
+                        <span className="inline-block px-2 py-0.5 rounded-md bg-neutral-100 text-[11px] font-medium text-neutral-800 capitalize">
+                          {formatCategory(product.category)}
                         </span>
                       </td>
 

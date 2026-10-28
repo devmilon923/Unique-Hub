@@ -10,7 +10,7 @@ interface PreOrderSectionProps {
 
 export function PreOrderSection({ products = [] }: PreOrderSectionProps) {
   const preOrderProducts = products.filter(
-    (item) => item.isPreOrder || item.status === "pre"
+    (item) => item.isPreOrder || item.status === "pre",
   );
 
   return (
@@ -22,14 +22,12 @@ export function PreOrderSection({ products = [] }: PreOrderSectionProps) {
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-              Upcoming Shipments • Scheduled Batch
-            </span>
             <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
               Pre-Order Drops
             </h2>
             <p className="mt-1 text-sm text-neutral-500">
-              Reserve upcoming international shipments before departure with fixed doorstep delivery.
+              Reserve upcoming international shipments before departure with
+              fixed doorstep delivery.
             </p>
           </div>
 
@@ -58,8 +56,9 @@ export function PreOrderSection({ products = [] }: PreOrderSectionProps) {
               Next Air Cargo Drop In Preparation
             </h3>
             <p className="mt-1 text-xs text-neutral-500 leading-relaxed">
-              Our sourcing team is curating the next scheduled shipment from overseas labs.
-              Pre-order slots will open once flight cargo manifests are locked.
+              Our sourcing team is curating the next scheduled shipment from
+              overseas labs. Pre-order slots will open once flight cargo
+              manifests are locked.
             </p>
             <div className="mt-4">
               <Link

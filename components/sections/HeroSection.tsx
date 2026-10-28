@@ -1,153 +1,403 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  LuArrowRight,
-  LuCompass,
-  LuShieldCheck,
-  LuPlane,
-  LuTruck,
-} from "react-icons/lu";
-import { Button } from "@/components/ui/button";
+import { LuChevronLeft, LuChevronRight, LuArrowRight } from "react-icons/lu";
+import { cn } from "@/lib/utils";
+
+/**
+ * Common Aspect Ratio Guidelines:
+ * - Carousel Banners: Standard 16:9 widescreen (Recommended resolution: 1920 × 1080 px or 1280 × 720 px).
+ * - Fixed Side Banner: Standard 3:4 portrait or 16:9 (Recommended resolution: 1200 × 1600 px).
+ *
+ * You can easily add, edit, or remove images here.
+ * The carousel smoothly loops whether there is 1 image or multiple images.
+ */
+export interface CarouselSlide {
+  id: string;
+  image: string;
+  alt: string;
+  href?: string;
+}
+
+const CAROUSEL_SLIDES: CarouselSlide[] = [
+  {
+    id: "banner-1",
+    image: "/images/hero/c1.png",
+    alt: "UniqueHub Featured Global Collection Banner 1",
+    href: "/products",
+  },
+  {
+    id: "banner-2",
+    image: "/images/hero/c2.jpg",
+    alt: "UniqueHub Featured Global Collection Banner 2",
+    href: "/products",
+  },
+];
+
+const FIXED_BANNER = {
+  image: "/images/hero/fix-image.jpg",
+  alt: "UniqueHub Daily Highlights and Special Offers",
+  href: "/products",
+};
 
 export function HeroSection() {
-  const trustMetrics = [
+  const slides = CAROUSEL_SLIDES;
+  const isMultiSlide = slides.length > 1;
+
+  // For multi-slide infinite loop: [cloneLast, ...slides, cloneFirst]
+  const displaySlides = isMultiSlide
+    ? [slides[slides.length - 1], ...slides, slides[0]]
+    : slides;
+
+  // Track state
+  const [currentIndex, setCurrentIndex] = useState(isMultiSlide ? 1 : 0);
+  const [withTransition, setWithTransition] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Touch tracking for swipe gestures
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  // Compute active dot index (0 to slides.length - 1)
+  const activeDotIndex = isMultiSlide
+    ? currentIndex === 0
+      ? slides.length - 1
+      : currentIndex === slides.length + 1
+        ? 0
+        : currentIndex - 1
+    : 0;
+
+  // Next slide handler
+  const handleNext = useCallback(() => {
+    if (!isMultiSlide || isTransitioning) return;
+    setIsTransitioning(true);
+    setWithTransition(true);
+    setCurrentIndex((prev) => prev + 1);
+  }, [isMultiSlide, isTransitioning]);
+
+  // Previous slide handler
+  const handlePrev = useCallback(() => {
+    if (!isMultiSlide || isTransitioning) return;
+    setIsTransitioning(true);
+    setWithTransition(true);
+    setCurrentIndex((prev) => prev - 1);
+  }, [isMultiSlide, isTransitioning]);
+
+  // Handle transition end for seamless infinite loop
+  const handleTransitionEnd = () => {
+    if (!isMultiSlide) return;
+    setIsTransitioning(false);
+
+    if (currentIndex === slides.length + 1) {
+      // Reached the clone of the first slide -> snap to real first slide
+      setWithTransition(false);
+      setCurrentIndex(1);
+    } else if (currentIndex === 0) {
+      // Reached the clone of the last slide -> snap to real last slide
+      setWithTransition(false);
+      setCurrentIndex(slides.length);
+    }
+  };
+
+  // Re-enable CSS transition after instantaneous position snap
+  useEffect(() => {
+    if (!withTransition && isMultiSlide) {
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setWithTransition(true);
+        });
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [withTransition, isMultiSlide]);
+
+  // Direct jump to a specific slide from indicators
+  const goToSlide = (slideIndex: number) => {
+    if (isTransitioning || slideIndex === activeDotIndex) return;
+    setIsTransitioning(true);
+    setWithTransition(true);
+    setCurrentIndex(slideIndex + 1);
+  };
+
+  // Autoplay timer (4.5s) - pauses on hover
+  useEffect(() => {
+    if (!isMultiSlide || isPaused) return;
+
+    const timer = setInterval(() => {
+      handleNext();
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isMultiSlide, isPaused, handleNext]);
+
+  // Touch swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > 45) {
+      handleNext();
+    } else if (distance < -45) {
+      handlePrev();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  // Popular categories list
+  const categories = [
     {
-      step: "01",
-      icon: LuCompass,
-      title: "Direct Sourcing",
-      desc: "Vetted overseas makers & boutique labs",
+      name: "Mens",
+      href: "/products?category=mens",
+      image: "/images/categories/mens.png",
     },
     {
-      step: "02",
-      icon: LuShieldCheck,
-      title: "100% Customs Cleared",
-      desc: "Zero surprise post-arrival tariffs or fees",
+      name: "Women",
+      href: "/products?category=women",
+      image: "/images/categories/womens.png",
     },
     {
-      step: "03",
-      icon: LuPlane,
-      title: "Consolidated Air Cargo",
-      desc: "Scheduled express flights into Dhaka",
+      name: "Baby",
+      href: "/products?category=baby",
+      image: "/images/categories/baby.png",
     },
     {
-      step: "04",
-      icon: LuTruck,
-      title: "All 64 BD Districts",
-      desc: "Tracked home delivery & local BDT payment",
+      name: "Gadgets",
+      href: "/products?category=gadgets",
+      image: "/images/categories/gadgets.png",
+    },
+    {
+      name: "Lights",
+      href: "/products?category=lights",
+      image: "/images/categories/lights.png",
     },
   ];
 
   return (
-    <section className="relative overflow-hidden border-b border-neutral-200/80 bg-white  pb-10 sm:pb-16 lg:pb-20">
-      {/* Subtle ambient lighting for frosted glass navbar blur depth */}
+    <section className="relative overflow-hidden border-b border-neutral-200/80 bg-white  pb-10 sm:pb-14 lg:pb-16">
+      {/* Subtle ambient gradient lighting */}
       <div
-        className="pointer-events-none absolute inset-x-0 -top-24 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl opacity-50 select-none"
+        className="pointer-events-none absolute inset-x-0 -top-24 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl opacity-40 select-none"
         aria-hidden="true"
       >
-        <div className="aspect-[1155/400] w-[68rem] max-w-none bg-gradient-to-tr from-neutral-200/40 via-neutral-100/60 to-transparent" />
+        <div className="aspect-[1155/400] w-[68rem] max-w-none bg-gradient-to-tr from-neutral-200/40 via-neutral-100/50 to-transparent" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Balanced Grid: 1 col on mobile (text only), 2 cols on desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
-          {/* Left Column: Direct, to-the-point copy */}
-          <div className="flex flex-col items-start text-left space-y-4 sm:space-y-6 w-full">
-            {/* Cohesive High-Contrast Drop Tag */}
-            <Link
-              href="#pre-order"
-              className="animate-fade-in-up group inline-flex items-center gap-2 rounded-full border border-neutral-200/90 bg-neutral-50/80 p-1 pr-3 text-xs hover:border-neutral-400 hover:bg-white transition-all duration-150 cursor-pointer active:scale-[0.98] shadow-2xs max-w-full"
+        {/* 70% / 30% Hero Banner Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-3.5 sm:gap-4 lg:gap-5 items-stretch">
+          {/* 70% Image-Only Looping Carousel */}
+          <div className="lg:col-span-7 w-full">
+            <div
+              className="group relative w-full aspect-[16/9] overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-100/80 shadow-xs select-none"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
-              <span className="flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-white uppercase shrink-0">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Batch 08
-              </span>
-              <span className="font-medium text-neutral-700 text-xs group-hover:text-neutral-900 transition-colors truncate">
-                Direct air cargo drop is live
-              </span>
-              <LuArrowRight className="size-3 text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-150 shrink-0" />
-            </Link>
+              {/* Single Image Case (No tracking clones needed) */}
+              {!isMultiSlide ? (
+                <div className="relative w-full h-full">
+                  {slides[0]?.href ? (
+                    <Link
+                      href={slides[0].href}
+                      className="block relative w-full h-full"
+                    >
+                      <Image
+                        src={slides[0].image}
+                        alt={slides[0].alt}
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 100vw, 70vw"
+                        className="object-cover w-full h-full"
+                      />
+                    </Link>
+                  ) : (
+                    <Image
+                      src={
+                        slides[0]?.image ||
+                        "/images/banners/carousel-banner-1.svg"
+                      }
+                      alt={slides[0]?.alt || "Carousel Banner"}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 70vw"
+                      className="object-cover w-full h-full"
+                    />
+                  )}
+                </div>
+              ) : (
+                /* Multi-Image Looping Slider Track */
+                <>
+                  <div
+                    className={cn(
+                      "flex h-full w-full",
+                      withTransition
+                        ? "transition-transform duration-500 ease-out"
+                        : "transition-none",
+                    )}
+                    style={{
+                      transform: `translateX(-${currentIndex * 100}%)`,
+                    }}
+                    onTransitionEnd={handleTransitionEnd}
+                  >
+                    {displaySlides.map((slide, idx) => (
+                      <div
+                        key={`${slide.id}-${idx}`}
+                        className="relative h-full w-full shrink-0 grow-0"
+                      >
+                        {slide.href ? (
+                          <Link
+                            href={slide.href}
+                            className="block relative w-full h-full"
+                          >
+                            <Image
+                              src={slide.image}
+                              alt={slide.alt}
+                              fill
+                              priority={idx === 1}
+                              sizes="(max-width: 1024px) 100vw, 70vw"
+                              className="object-cover w-full h-full select-none pointer-events-none"
+                            />
+                          </Link>
+                        ) : (
+                          <Image
+                            src={slide.image}
+                            alt={slide.alt}
+                            fill
+                            priority={idx === 1}
+                            sizes="(max-width: 1024px) 100vw, 70vw"
+                            className="object-cover w-full h-full select-none pointer-events-none"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
 
-            {/* Hero Headline - guaranteed 2-line balance on mobile devices */}
-            <h1 className="animate-fade-in-up animation-delay-75 w-full text-[1.75rem] sm:text-[1.78rem] lg:text-[3.25rem] xl:text-[3.65rem] font-semibold tracking-[-0.035em] text-neutral-900 leading-[1.16] sm:leading-[1.14] sm:[text-wrap:balance]">
-              <span className="block sm:inline">Discover amazing products</span>{" "}
-              <span className="block sm:inline">
-                you won&apos;t find anywhere else.
-              </span>
-            </h1>
+                  {/* Previous Slide Button */}
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    aria-label="Previous slide"
+                    className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-10 flex size-8 sm:size-10 items-center justify-center rounded-full bg-white/85 text-neutral-800 shadow-md backdrop-blur-xs hover:bg-white hover:scale-105 active:scale-95 transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
+                  >
+                    <LuChevronLeft className="size-4 sm:size-5" />
+                  </button>
 
-            {/* Subtitle - fills width comfortably without awkward line breaks */}
-            <p className="animate-fade-in-up animation-delay-150 w-full text-sm sm:text-base lg:text-lg text-neutral-500 leading-relaxed font-normal">
-              Hand-picked tech, workspace tools, and distinctive everyday gear
-              from overseas makers. We handle international shipping, customs,
-              and doorstep delivery with transparent local pricing.
-            </p>
+                  {/* Next Slide Button */}
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    aria-label="Next slide"
+                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex size-8 sm:size-10 items-center justify-center rounded-full bg-white/85 text-neutral-800 shadow-md backdrop-blur-xs hover:bg-white hover:scale-105 active:scale-95 transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
+                  >
+                    <LuChevronRight className="size-4 sm:size-5" />
+                  </button>
 
-            {/* CTA Buttons - 50/50 full width grid on mobile, inline on desktop */}
-            <div className="animate-fade-in-up animation-delay-225 grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:gap-3 w-full sm:w-auto pt-1">
-              <Link href="/products" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full rounded-xl bg-neutral-900 px-3 sm:px-6 font-medium text-white shadow-none hover:bg-neutral-800 text-xs sm:text-sm cursor-pointer transition-all duration-200 ease-out active:scale-[0.98] h-11"
-                >
-                  <span>Shop Now</span>
-                  <LuArrowRight className="size-3.5 sm:size-4 ml-1 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-              </Link>
-
-              <Link href="#pre-order" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full rounded-xl border-neutral-200 bg-white px-3 sm:px-6 font-medium text-neutral-800 hover:bg-neutral-50 shadow-none text-xs sm:text-sm cursor-pointer transition-all duration-200 ease-out active:scale-[0.98] h-11"
-                >
-                  View Pre-Orders
-                </Button>
-              </Link>
+                  {/* Dot Indicators */}
+                  <div className="absolute bottom-3 sm:bottom-4 inset-x-0 z-10 flex items-center justify-center gap-1.5 sm:gap-2 pointer-events-none">
+                    <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-full bg-black/25 backdrop-blur-xs pointer-events-auto">
+                      {slides.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => goToSlide(i)}
+                          aria-label={`Go to slide ${i + 1}`}
+                          className={cn(
+                            "h-1.5 sm:h-2 rounded-full transition-all duration-300 cursor-pointer",
+                            activeDotIndex === i
+                              ? "w-5 sm:w-6 bg-white"
+                              : "w-1.5 sm:w-2 bg-white/50 hover:bg-white/80",
+                          )}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Right Column: Clean Transparent Image (Hidden on mobile devices, shown on desktop lg:) */}
-          <div className="animate-fade-in animation-delay-150 hidden lg:flex relative w-full items-center justify-end">
-            <div className="relative w-full max-w-[540px] xl:max-w-[600px] flex items-center justify-center">
-              <Image
-                src="/images/hero.png"
-                alt="UniqueHub Cross-Border Global Air Shipping and Doorstep Delivery"
-                width={1536}
-                height={1024}
-                priority
-                className="w-full h-auto object-contain select-none"
-              />
+          {/* 30% Fixed Promotional Image */}
+          <div className="lg:col-span-3 w-full">
+            <div className="group relative w-full h-full min-h-[190px] sm:min-h-[240px] lg:min-h-0 aspect-[16/9] lg:aspect-auto overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-100/80 shadow-xs select-none">
+              {FIXED_BANNER.href ? (
+                <Link
+                  href={FIXED_BANNER.href}
+                  className="block relative w-full h-full"
+                >
+                  <Image
+                    src={FIXED_BANNER.image}
+                    alt={FIXED_BANNER.alt}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 30vw"
+                    className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                  />
+                </Link>
+              ) : (
+                <Image
+                  src={FIXED_BANNER.image}
+                  alt={FIXED_BANNER.alt}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 30vw"
+                  className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                />
+              )}
             </div>
           </div>
         </div>
 
-        {/* Architectural 4-Pillar Assurance Cards - compact 2x2 grid on mobile */}
-        <div className="animate-fade-in-up animation-delay-300 mt-8 sm:mt-14 grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          {trustMetrics.map((point) => {
-            const Icon = point.icon;
-            return (
-              <div
-                key={point.title}
-                className="group relative rounded-xl border border-neutral-200/80 bg-neutral-50/40 p-3 sm:p-4 transition-all duration-200 hover:bg-white hover:border-neutral-300 hover:shadow-xs text-left"
+        {/* Curated Categories */}
+        <div className="animate-fade-in-up animation-delay-150 mt-8 sm:mt-10 lg:mt-12">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-neutral-400">
+              Popular Categories
+            </h2>
+          </div>
+
+          {/* Categories Horizontal Swipe Rail / Grid */}
+          <div className="flex sm:grid sm:grid-cols-5 gap-2.5 sm:gap-3.5 lg:gap-4 overflow-x-auto sm:overflow-visible no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-1 sm:pb-0 snap-x snap-mandatory">
+            {categories.map((category) => (
+              <Link
+                key={category.name}
+                href={category.href}
+                className="group relative flex flex-col w-[115px] sm:w-auto shrink-0 sm:shrink rounded-2xl border border-neutral-200/80 bg-neutral-50/40 p-2 sm:p-2.5 transition-all duration-200 hover:bg-white hover:border-neutral-300 hover:shadow-xs cursor-pointer snap-start active:scale-[0.98]"
               >
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-white border border-neutral-200/80 text-neutral-800 shadow-2xs group-hover:scale-105 group-hover:text-neutral-950 transition-all duration-200">
-                    <Icon className="size-3.5 sm:size-4 stroke-[1.8]" />
-                  </div>
-                  <span className="font-mono text-[9px] sm:text-[10px] font-semibold text-neutral-400 tracking-wider">
-                    {point.step}
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white border border-neutral-100">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    sizes="(max-width: 640px) 115px, (max-width: 1024px) 20vw, 20vw"
+                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                  />
+                </div>
+                <div className="mt-2 sm:mt-2.5 flex items-center justify-between px-0.5 sm:px-1 py-0.5">
+                  <span className="text-xs sm:text-sm font-semibold text-neutral-900 tracking-tight group-hover:text-neutral-950 truncate">
+                    {category.name}
+                  </span>
+                  <span className="flex size-5 sm:size-6 items-center justify-center rounded-full bg-white border border-neutral-200/60 text-neutral-400 group-hover:text-neutral-900 group-hover:border-neutral-300 transition-all duration-150 shrink-0">
+                    <LuArrowRight className="size-2.5 sm:size-3 group-hover:translate-x-0.5 transition-transform duration-150" />
                   </span>
                 </div>
-                <h3 className="text-xs font-semibold text-neutral-900 tracking-tight leading-tight">
-                  {point.title}
-                </h3>
-                <p className="mt-1 text-[10px] sm:text-[11px] text-neutral-500 leading-snug sm:leading-normal font-normal">
-                  {point.desc}
-                </p>
-              </div>
-            );
-          })}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>

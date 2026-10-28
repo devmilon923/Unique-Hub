@@ -28,9 +28,7 @@ export function FeaturedSection({ products = [] }: FeaturedSectionProps) {
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-              Curated Highlights
-            </span>
+       
             <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
               Featured Products
             </h2>

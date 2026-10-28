@@ -55,7 +55,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 mb-12 md:mb-22 w-full transition-all duration-300 pointer-events-none",
+        "sticky top-0 z-50 mb-10 md:mb-16 w-full transition-all duration-300 ",
         isScrolled ? "pt-2 sm:pt-2.5 pb-2" : "pt-3 sm:pt-4 pb-2",
       )}
     >

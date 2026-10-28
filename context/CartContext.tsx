@@ -93,8 +93,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       (product.variation && product.variation.find((v) => v.isAvailable)) ||
       product.variation?.[0];
 
+    const isPreOrder = product.isPreOrder || product.status === "pre";
+    const basePrice = isPreOrder
+      ? Math.round(product.price * 0.5)
+      : product.price;
+
     const unitPrice =
-      product.price + (effectiveVariation?.extraCost || 0);
+      basePrice + (effectiveVariation?.extraCost || 0);
 
     const itemId = effectiveVariation
       ? `${product.id}-${effectiveVariation.color}`
@@ -135,8 +140,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       (product.variation && product.variation.find((v) => v.isAvailable)) ||
       product.variation?.[0];
 
+    const isPreOrder = product.isPreOrder || product.status === "pre";
+    const basePrice = isPreOrder
+      ? Math.round(product.price * 0.5)
+      : product.price;
+
     const unitPrice =
-      product.price + (effectiveVariation?.extraCost || 0);
+      basePrice + (effectiveVariation?.extraCost || 0);
 
     const item: CartItem = {
       id: effectiveVariation

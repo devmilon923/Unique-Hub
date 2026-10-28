@@ -1,4 +1,5 @@
 import { api, ApiResponse } from "./axios";
+import { normalizeCategory } from "@/data/products";
 
 export type ProductStatus = "pre" | "live" | "featured" | "hidden";
 
@@ -77,13 +78,24 @@ export interface ProductFilterQuery {
 
 export const productApi = {
   /**
-   * Fetch paginated products with optional filters for category and status
+   * Fetch paginated products with optional filters for category and status.
+   * Ensures category query parameter is passed in server-canonical lowercase.
    */
   async getAll(
     query?: ProductFilterQuery
   ): Promise<ProductListResponseData> {
+    const params: Record<string, any> = { ...query };
+    if (params.category) {
+      const trimmed = String(params.category).trim();
+      if (trimmed.toLowerCase() === "all" || !trimmed) {
+        delete params.category;
+      } else {
+        params.category = normalizeCategory(trimmed);
+      }
+    }
+
     const res = await api.get<ApiResponse<ProductListResponseData>>("/product", {
-      params: query,
+      params,
     });
     const data = res.data?.data;
     return {
@@ -117,14 +129,15 @@ export const productApi = {
     limit: number = 4
   ): Promise<ProductItem[]> {
     try {
+      const normalizedCat = category ? normalizeCategory(category) : undefined;
       const res = await this.getAll({
-        category: category || undefined,
+        category: normalizedCat,
         limit: limit + 2,
       });
       const filtered = (res.result || []).filter(
         (p) => p._id !== excludeId && p.status !== "hidden"
       );
-      if (filtered.length >= limit || !category) {
+      if (filtered.length >= limit || !normalizedCat) {
         return filtered.slice(0, limit);
       }
       // If same category didn't have enough, fetch general products
@@ -142,20 +155,28 @@ export const productApi = {
   },
 
   /**
-   * Add a new product (Admin protected)
+   * Add a new product (Admin protected) - ensures category is saved in lowercase
    */
   async create(data: CreateProductInput): Promise<ProductItem> {
-    const res = await api.post<ApiResponse<ProductItem>>("/product", data);
+    const payload: CreateProductInput = {
+      ...data,
+      category: normalizeCategory(data.category),
+    };
+    const res = await api.post<ApiResponse<ProductItem>>("/product", payload);
     return res.data.data;
   },
 
   /**
-   * Edit existing product by ObjectId (Admin protected)
+   * Edit existing product by ObjectId (Admin protected) - ensures category is saved in lowercase
    */
   async update(id: string, data: UpdateProductInput): Promise<ProductItem> {
+    const payload: UpdateProductInput = {
+      ...data,
+      ...(data.category ? { category: normalizeCategory(data.category) } : {}),
+    };
     const res = await api.patch<ApiResponse<ProductItem>>(
       `/product/edit/${encodeURIComponent(id)}`,
-      data
+      payload
     );
     return res.data.data;
   },

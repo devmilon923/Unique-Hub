@@ -425,11 +425,25 @@ function TrackOrderContent() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-2 text-xs border-t border-neutral-100">
-                <span className="text-neutral-500">Total Payable:</span>
-                <span className="text-base font-bold font-mono text-neutral-950">
-                  ৳{orderData.totalAmount.toLocaleString("en-BD")}
-                </span>
+              <div className="space-y-1.5 pt-2 border-t border-neutral-100 text-xs">
+                {orderData.deliveryFee !== undefined && (
+                  <div className="flex justify-between items-center text-neutral-500">
+                    <span>Delivery Charge:</span>
+                    <span className="font-mono font-medium text-neutral-800">
+                      {orderData.deliveryFee === 0 ? (
+                        <span className="text-emerald-600 font-semibold">FREE</span>
+                      ) : (
+                        `৳${orderData.deliveryFee.toLocaleString("en-BD")}`
+                      )}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-1 border-t border-neutral-100">
+                  <span className="text-neutral-500 font-medium">Total Payable:</span>
+                  <span className="text-base font-bold font-mono text-neutral-950">
+                    ৳{orderData.totalAmount.toLocaleString("en-BD")}
+                  </span>
+                </div>
               </div>
             </div>
 

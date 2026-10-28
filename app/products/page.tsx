@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { Product } from "@/data/products";
+import { Product, CATEGORIES, normalizeCategory, formatCategory } from "@/data/products";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,17 +36,35 @@ function ProductSkeleton() {
 function ProductsContent() {
   const searchParams = useSearchParams();
   const initialFilter = searchParams.get("filter");
+  const initialCategory = searchParams.get("category");
+
+  const matchingCategory = initialCategory
+    ? CATEGORIES.find(
+        (c) => c.toLowerCase() === normalizeCategory(initialCategory).toLowerCase()
+      ) || formatCategory(initialCategory)
+    : "All";
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>(matchingCategory);
   const [filterPreorderOnly, setFilterPreorderOnly] = useState(
     initialFilter === "preorder",
   );
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>(["All"]);
+  const [categories, setCategories] = useState<string[]>([...CATEGORIES]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Sync category from URL parameter if it changes
+  useEffect(() => {
+    if (initialCategory) {
+      const match =
+        CATEGORIES.find(
+          (c) => c.toLowerCase() === normalizeCategory(initialCategory).toLowerCase()
+        ) || formatCategory(initialCategory);
+      setSelectedCategory(match);
+    }
+  }, [initialCategory]);
 
   // Debounce search query so server isn't spammed per keystroke
   useEffect(() => {
@@ -66,11 +84,14 @@ function ProductsContent() {
             new Set(
               data.result
                 .filter((p) => p.status !== "hidden")
-                .map((p) => p.category)
+                .map((p) => formatCategory(p.category))
                 .filter(Boolean),
             ),
           );
-          setCategories(["All", ...list]);
+          const combined = Array.from(
+            new Set(["All", ...CATEGORIES.slice(1), ...list])
+          );
+          setCategories(combined);
         }
       })
       .catch(() => {});
@@ -89,7 +110,7 @@ function ProductsContent() {
       queryParams.search = debouncedSearch.trim();
     }
     if (selectedCategory !== "All") {
-      queryParams.category = selectedCategory;
+      queryParams.category = normalizeCategory(selectedCategory);
     }
     if (filterPreorderOnly) {
       queryParams.status = "pre";
@@ -187,7 +208,9 @@ function ProductsContent() {
         <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {categories.map((cat) => {
             const isSelected =
-              selectedCategory.toLowerCase() === cat.toLowerCase();
+              cat === "All"
+                ? selectedCategory === "All"
+                : normalizeCategory(selectedCategory) === normalizeCategory(cat);
             return (
               <button
                 key={cat}

@@ -83,6 +83,14 @@ export interface OrderItemPayload {
   color: string;
 }
 
+export const getDeliveryFee = (
+  division?: string,
+  isPreOrder?: boolean
+): number => {
+  if (isPreOrder) return 0;
+  return division?.toLowerCase() === "dhaka" ? 80 : 130;
+};
+
 export interface CreateOrderInput {
   user: OrderUser;
   item: OrderItemPayload;
@@ -92,7 +100,13 @@ export interface CreateOrderInput {
 
 export interface CreateOrderResult {
   invoiceId: string;
+  deliveryFee: number;
+  subtotal?: number;
   totalAmount: number;
+  isPreOrder?: boolean;
+  payableNow?: number;
+  dueOnDelivery?: number;
+  fullPrice?: number;
   productName: string;
   quantity: number;
   time: string;
@@ -120,6 +134,7 @@ export interface OrderRecord {
   _id: string;
   user: OrderUser;
   item: OrderItem;
+  deliveryFee?: number;
   totalAmount: number;
   paymentMethod: PaymentMethod;
   status: OrderStatus;
@@ -147,6 +162,7 @@ export interface TrackOrderResult {
   name: string;
   customerName: string;
   phone: string;
+  deliveryFee?: number;
   totalAmount: number;
   paymentMethod: PaymentMethod;
   division: DivisionType;
