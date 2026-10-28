@@ -35,32 +35,32 @@ export const ORDER_STATUS_CONFIG: Record<
 > = {
   pending: {
     label: "Pending",
-    badgeVariant: "bg-amber-50 text-amber-700 border-amber-200",
+    badgeVariant: "bg-amber-50 text-amber-800 border-amber-200",
     description: "Order received and awaiting confirmation.",
   },
   processing: {
     label: "Processing",
-    badgeVariant: "bg-blue-50 text-blue-700 border-blue-200",
+    badgeVariant: "bg-logistics-subtle text-logistics-subtle-text border-logistics-subtle-border",
     description: "Order confirmed and being prepared for international dispatch.",
   },
   shipped: {
     label: "Shipped",
-    badgeVariant: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    badgeVariant: "bg-blue-bell-100 text-blue-bell-900 border-blue-bell-300",
     description: "Package in transit with Bangladesh courier.",
   },
   delivered: {
     label: "Delivered",
-    badgeVariant: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    badgeVariant: "bg-emerald-50 text-emerald-800 border-emerald-200",
     description: "Package successfully delivered to destination.",
   },
   cancelled: {
     label: "Cancelled",
-    badgeVariant: "bg-rose-50 text-rose-700 border-rose-200",
+    badgeVariant: "bg-commerce-subtle text-commerce-subtle-text border-commerce-subtle-border",
     description: "Order has been cancelled.",
   },
   refunded: {
     label: "Refunded",
-    badgeVariant: "bg-neutral-100 text-neutral-600 border-neutral-200",
+    badgeVariant: "bg-alabaster-100 text-onyx-600 border-alabaster-200",
     description: "Order payment has been refunded.",
   },
 };

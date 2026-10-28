@@ -1,48 +1,177 @@
-/* UniqueHub Clean & Minimal Design Tokens - High-End E-Commerce */
+/* UniqueHub Design Tokens - Approach 2: Dual-Accent Commerce Split
+   Clean, Minimal, High-End E-Commerce for Cross-Border Sourcing
+   Light Theme Focus (No Dark Mode)
+*/
+
 :root {
-  /* Minimal Neutral Palette */
-  --brand-primary: oklch(0.18 0 0);
-  --brand-primary-hover: oklch(0.28 0 0);
+  /* -------------------------------------------------------------
+   * 1. Brand Raw Color Scales (Provided Palette)
+   * ----------------------------------------------------------- */
 
-  /* Semantic UI Tokens (Clean Light Theme) */
-  --background: oklch(0.995 0 0);
-  --foreground: oklch(0.15 0 0);
+  /* Classic Crimson (Commerce Channel: Urgency, Pre-Orders, Discounts) */
+  --color-classic-crimson-50: #fce8ec;
+  --color-classic-crimson-100: #fad1d9;
+  --color-classic-crimson-200: #f5a3b4;
+  --color-classic-crimson-300: #f0758e;
+  --color-classic-crimson-400: #eb4768;
+  --color-classic-crimson-500: #e61942;
+  --color-classic-crimson-600: #b81435;
+  --color-classic-crimson-700: #8a0f28;
+  --color-classic-crimson-800: #5c0a1b;
+  --color-classic-crimson-900: #2e050d;
+  --color-classic-crimson-950: #200409;
+
+  /* Blue Bell (Logistics Channel: International Sourcing, Trust, Tracking) */
+  --color-blue-bell-50: #e7f7fe;
+  --color-blue-bell-100: #ceeefd;
+  --color-blue-bell-200: #9dddfb;
+  --color-blue-bell-300: #6cccf9;
+  --color-blue-bell-400: #3bbbf7;
+  --color-blue-bell-500: #0aabf5;
+  --color-blue-bell-600: #0888c4;
+  --color-blue-bell-700: #066693;
+  --color-blue-bell-800: #044462;
+  --color-blue-bell-900: #022231;
+  --color-blue-bell-950: #011822;
+
+  /* Alabaster Grey (Neutral Foundation: Surfaces, Borders, Card Outlines) */
+  --color-alabaster-grey-50: #f0f3f4;
+  --color-alabaster-grey-100: #e2e6e9;
+  --color-alabaster-grey-200: #c5cdd3;
+  --color-alabaster-grey-300: #a8b5bd;
+  --color-alabaster-grey-400: #8b9ca7;
+  --color-alabaster-grey-500: #6e8391;
+  --color-alabaster-grey-600: #586974;
+  --color-alabaster-grey-700: #424f57;
+  --color-alabaster-grey-800: #2c343a;
+  --color-alabaster-grey-900: #161a1d;
+  --color-alabaster-grey-950: #0f1214;
+
+  /* Powder Blue (Technical / Hardware Context: Specs, Dividers, Inactive states) */
+  --color-powder-blue-50: #eff2f6;
+  --color-powder-blue-100: #dfe5ec;
+  --color-powder-blue-200: #beccda;
+  --color-powder-blue-300: #9eb2c7;
+  --color-powder-blue-400: #7d98b5;
+  --color-powder-blue-500: #5d7ea2;
+  --color-powder-blue-600: #4a6582;
+  --color-powder-blue-700: #384c61;
+  --color-powder-blue-800: #253341;
+  --color-powder-blue-900: #131920;
+  --color-powder-blue-950: #0d1217;
+
+  /* Onyx (Primary Neutral: Premium Typography, Contrast Chrome, Solid Buttons) */
+  --color-onyx-50: #f2f1f4;
+  --color-onyx-100: #e4e3e8;
+  --color-onyx-200: #c9c7d1;
+  --color-onyx-300: #afabba;
+  --color-onyx-400: #948fa3;
+  --color-onyx-500: #79738c;
+  --color-onyx-600: #615c70;
+  --color-onyx-700: #494554;
+  --color-onyx-800: #302e38;
+  --color-onyx-900: #18171c;
+  --color-onyx-950: #111014;
+
+  /* -------------------------------------------------------------
+   * 2. Semantic System Tokens (Approach 2: Dual-Accent Hierarchy)
+   * ----------------------------------------------------------- */
+
+  /* Canvas & Base Surfaces */
+  --background: #ffffff;
+  --foreground: var(--color-onyx-950);
   
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
+  --surface-ground: #fafbfc;
+  --surface-subtle: var(--color-alabaster-grey-50);
+  --surface-tech: var(--color-powder-blue-50);
 
-  --primary: oklch(0.18 0 0);
-  --primary-foreground: oklch(0.99 0 0);
+  --card: #ffffff;
+  --card-foreground: var(--color-onyx-950);
 
-  --secondary: oklch(0.965 0 0);
-  --secondary-foreground: oklch(0.2 0 0);
+  --popover: #ffffff;
+  --popover-foreground: var(--color-onyx-950);
 
-  --muted: oklch(0.965 0 0);
-  --muted-foreground: oklch(0.52 0 0);
+  /* Primary Action Button (Obsidian Minimalist Contrast) */
+  --primary: var(--color-onyx-950);
+  --primary-foreground: #ffffff;
+  --primary-hover: var(--color-onyx-800);
 
-  --accent: oklch(0.96 0 0);
-  --accent-foreground: oklch(0.18 0 0);
+  /* Secondary & Muted Structural Elements */
+  --secondary: var(--color-alabaster-grey-50);
+  --secondary-foreground: var(--color-onyx-900);
 
-  --destructive: oklch(0.58 0.22 28);
-  --destructive-foreground: oklch(0.99 0 0);
+  --muted: var(--color-alabaster-grey-50);
+  --muted-foreground: var(--color-onyx-500);
 
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.3 0 0);
+  --accent: var(--color-alabaster-grey-100);
+  --accent-foreground: var(--color-onyx-950);
 
-  /* Clean Radii */
-  --radius: 0.5rem;
+  /* Borders & Inputs */
+  --border: var(--color-alabaster-grey-100);
+  --border-subtle: var(--color-alabaster-grey-50);
+  --border-strong: var(--color-alabaster-grey-200);
+  --input: var(--color-alabaster-grey-100);
+  --ring: var(--color-onyx-900);
+
+  /* -------------------------------------------------------------
+   * 3. Channel A: Commerce & Pre-Order Highlighting (Sky Light Blue)
+   * Replacing aggressive red with trustworthy, airy sky light blue (Blue Bell)
+   * Pre-orders, discount chips, advance payment badges, verified booking
+   * ----------------------------------------------------------- */
+  --commerce: var(--color-blue-bell-600);
+  --commerce-hover: var(--color-blue-bell-700);
+  --commerce-foreground: #ffffff;
+  --commerce-accent: var(--color-blue-bell-500);
+  --commerce-subtle: var(--color-blue-bell-50);
+  --commerce-subtle-border: var(--color-blue-bell-200);
+  --commerce-subtle-text: var(--color-blue-bell-800);
+
+  /* Destructive & Warning Channel (Reserved strictly for errors/deletion) */
+  --destructive: var(--color-classic-crimson-600);
+  --destructive-foreground: #ffffff;
+
+  /* -------------------------------------------------------------
+   * 4. Channel B: Logistics, Verification & Global Sourcing (Blue Bell)
+   * China import badges, customs status, tracking progress, flight tags
+   * ----------------------------------------------------------- */
+  --logistics: var(--color-blue-bell-600);
+  --logistics-hover: var(--color-blue-bell-700);
+  --logistics-foreground: #ffffff;
+  --logistics-accent: var(--color-blue-bell-500);
+  --logistics-subtle: var(--color-blue-bell-50);
+  --logistics-subtle-border: var(--color-blue-bell-200);
+  --logistics-subtle-text: var(--color-blue-bell-800);
+
+  /* -------------------------------------------------------------
+   * 5. Technical Context (Powder Blue)
+   * Product specs tables, packaging dimensions, cold hardware specs
+   * ----------------------------------------------------------- */
+  --tech-subtle: var(--color-powder-blue-50);
+  --tech-subtle-border: var(--color-powder-blue-200);
+  --tech-subtle-text: var(--color-powder-blue-700);
+
+  /* -------------------------------------------------------------
+   * 6. Clean Geometry & Elevation Radii
+   * ----------------------------------------------------------- */
+  --radius: 0.625rem;
   --radius-sm: calc(var(--radius) * 0.75);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) * 1.25);
   --radius-xl: calc(var(--radius) * 1.75);
   --radius-full: 9999px;
 
-  /* Subtle Shadows */
-  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
-  --shadow-elevated: 0 10px 25px -5px rgb(0 0 0 / 0.05);
+  /* Subtle High-End Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgb(17 16 20 / 0.04);
+  --shadow-card: 0 2px 8px -2px rgb(17 16 20 / 0.05), 0 1px 3px 0 rgb(17 16 20 / 0.03);
+  --shadow-elevated: 0 12px 32px -4px rgb(17 16 20 / 0.08);
+
+  /* Sidebar Tokens (Light Theme Harmonized) */
+  --sidebar: var(--color-alabaster-grey-50);
+  --sidebar-foreground: var(--color-onyx-950);
+  --sidebar-primary: var(--color-onyx-950);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-alabaster-grey-100);
+  --sidebar-accent-foreground: var(--color-onyx-950);
+  --sidebar-border: var(--color-alabaster-grey-100);
+  --sidebar-ring: var(--color-onyx-900);
 }

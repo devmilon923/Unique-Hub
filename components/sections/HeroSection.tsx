@@ -365,7 +365,7 @@ export function HeroSection() {
         {/* Curated Categories */}
         <div className="animate-fade-in-up animation-delay-150 mt-8 sm:mt-10 lg:mt-12">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-neutral-400">
+            <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Popular Categories
             </h2>
           </div>
@@ -376,9 +376,9 @@ export function HeroSection() {
               <Link
                 key={category.name}
                 href={category.href}
-                className="group relative flex flex-col w-[115px] sm:w-auto shrink-0 sm:shrink rounded-2xl border border-neutral-200/80 bg-neutral-50/40 p-2 sm:p-2.5 transition-all duration-200 hover:bg-white hover:border-neutral-300 hover:shadow-xs cursor-pointer snap-start active:scale-[0.98]"
+                className="group relative flex flex-col w-[115px] sm:w-auto shrink-0 sm:shrink rounded-2xl border border-border/80 bg-secondary/40 p-2 sm:p-2.5 transition-all duration-150 hover:bg-card hover:border-blue-bell-200 hover:shadow-[0_8px_20px_-4px_rgba(10,171,245,0.08)] cursor-pointer snap-start active:scale-[0.98]"
               >
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white border border-neutral-100">
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white border border-border/60">
                   <Image
                     src={category.image}
                     alt={category.name}
@@ -388,10 +388,10 @@ export function HeroSection() {
                   />
                 </div>
                 <div className="mt-2 sm:mt-2.5 flex items-center justify-between px-0.5 sm:px-1 py-0.5">
-                  <span className="text-xs sm:text-sm font-semibold text-neutral-900 tracking-tight group-hover:text-neutral-950 truncate">
+                  <span className="text-xs sm:text-sm font-semibold text-foreground tracking-tight group-hover:text-blue-bell-800 transition-colors duration-150 truncate">
                     {category.name}
                   </span>
-                  <span className="flex size-5 sm:size-6 items-center justify-center rounded-full bg-white border border-neutral-200/60 text-neutral-400 group-hover:text-neutral-900 group-hover:border-neutral-300 transition-all duration-150 shrink-0">
+                  <span className="flex size-5 sm:size-6 items-center justify-center rounded-full bg-white border border-border text-muted-foreground group-hover:bg-blue-bell-50 group-hover:text-blue-bell-700 group-hover:border-blue-bell-200 transition-all duration-150 shrink-0 shadow-2xs">
                     <LuArrowRight className="size-2.5 sm:size-3 group-hover:translate-x-0.5 transition-transform duration-150" />
                   </span>
                 </div>

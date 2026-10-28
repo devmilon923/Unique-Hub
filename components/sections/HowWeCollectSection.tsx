@@ -67,31 +67,31 @@ export function HowWeCollectSection() {
             return (
               <div
                 key={step.num}
-                className="group flex flex-col justify-between rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-neutral-400 hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
+                className="group flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-all duration-150 hover:border-blue-bell-200 hover:shadow-[0_8px_20px_-4px_rgba(10,171,245,0.08)]"
               >
                 <div>
                   {/* Step Header: Step Badge + Utility Icon */}
                   <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-neutral-600">
+                    <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-mono font-semibold uppercase text-muted-foreground group-hover:bg-blue-bell-50 group-hover:text-blue-bell-700 transition-colors">
                       Step {step.num}
                     </span>
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-neutral-50 border border-neutral-200/60 text-neutral-700 transition-colors group-hover:bg-neutral-900 group-hover:text-white group-hover:border-neutral-900">
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-secondary border border-border text-foreground transition-all duration-150 group-hover:bg-blue-bell-600 group-hover:text-white group-hover:border-blue-bell-600 group-hover:shadow-xs">
                       <Icon className="size-4 stroke-[1.75]" />
                     </div>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="mt-4 text-sm font-semibold text-neutral-900">
+                  <h3 className="mt-4 text-sm font-semibold text-foreground group-hover:text-blue-bell-950 transition-colors">
                     {step.title}
                   </h3>
-                  <p className="mt-1.5 text-xs text-neutral-500 leading-relaxed font-normal">
+                  <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed font-normal">
                     {step.desc}
                   </p>
                 </div>
 
                 {/* Bottom Milestone Highlight */}
-                <div className="mt-5 pt-3 border-t border-neutral-100 flex items-center gap-1.5 text-[11px] font-medium text-neutral-600">
-                  <LuCheck className="size-3 text-neutral-900 shrink-0 stroke-[2.5]" />
+                <div className="mt-5 pt-3 border-t border-border/70 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground group-hover:text-blue-bell-800 transition-colors">
+                  <LuCheck className="size-3 text-blue-bell-600 shrink-0 stroke-[2.5]" />
                   <span>{step.highlight}</span>
                 </div>
               </div>

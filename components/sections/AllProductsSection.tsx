@@ -19,16 +19,16 @@ export function AllProductsSection({ products = [] }: AllProductsSectionProps) {
   return (
     <section
       id="all-products"
-      className="py-16 sm:py-24 bg-white border-b border-neutral-200/80 scroll-mt-20"
+      className="py-16 sm:py-24 bg-white border-b border-border scroll-mt-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
+            <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
               Full Collection
             </h2>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Recent arrivals and imported innovations ready for dispatch across
               Bangladesh.
             </p>
@@ -36,7 +36,7 @@ export function AllProductsSection({ products = [] }: AllProductsSectionProps) {
 
           <Link
             href="/products"
-            className="group inline-flex items-center text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors duration-150 cursor-pointer"
+            className="group inline-flex items-center text-sm font-medium text-foreground hover:text-blue-bell-600 transition-colors duration-150 cursor-pointer"
           >
             <span>View All</span>
             <LuArrowRight className="size-4 ml-1 transition-transform duration-200 group-hover:translate-x-1" />
@@ -56,7 +56,7 @@ export function AllProductsSection({ products = [] }: AllProductsSectionProps) {
             <Button
               size="lg"
               variant="outline"
-              className="rounded-xl border-neutral-300 bg-white px-8 font-medium text-neutral-900 hover:bg-neutral-50 shadow-none gap-2 text-sm cursor-pointer transition-all duration-200 ease-out active:scale-[0.98]"
+              className="rounded-xl px-8 font-medium gap-2 text-sm cursor-pointer transition-all duration-150 ease-out active:scale-[0.98]"
             >
               <span>See More Products</span>
               <LuArrowRight className="size-4" />

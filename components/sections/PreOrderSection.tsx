@@ -16,16 +16,20 @@ export function PreOrderSection({ products = [] }: PreOrderSectionProps) {
   return (
     <section
       id="pre-order"
-      className="py-16 sm:py-24 bg-white border-b border-neutral-200/80 scroll-mt-20"
+      className="py-16 sm:py-24 bg-white border-b border-border scroll-mt-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Harmonized Editorial Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <h2 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-commerce-subtle-border bg-commerce-subtle px-2.5 py-0.5 text-[11px] font-semibold text-commerce-subtle-text mb-2">
+              <span className="size-1.5 rounded-full bg-commerce animate-pulse" />
+              <span>International Air Cargo Batch</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
               Pre-Order Drops
             </h2>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Reserve upcoming international shipments before departure with
               fixed doorstep delivery.
             </p>
@@ -33,7 +37,7 @@ export function PreOrderSection({ products = [] }: PreOrderSectionProps) {
 
           <Link
             href="/products?filter=preorder"
-            className="group inline-flex items-center text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors duration-150 cursor-pointer"
+            className="group inline-flex items-center text-sm font-medium text-foreground hover:text-commerce transition-colors duration-150 cursor-pointer"
           >
             <span>View All</span>
             <LuArrowRight className="size-4 ml-1 transition-transform duration-200 group-hover:translate-x-1" />

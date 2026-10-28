@@ -683,14 +683,14 @@ export function CartDrawer() {
                   <label
                     onClick={() => setPaymentMethod("cod")}
                     className={cn(
-                      "flex flex-col p-3 rounded-xl border text-left cursor-pointer transition-all",
+                      "flex flex-col p-3 rounded-xl border text-left cursor-pointer transition-all active:scale-[0.98]",
                       paymentMethod === "cod"
-                        ? "border-neutral-900 bg-neutral-900 text-white shadow-xs"
-                        : "border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300"
+                        ? "border-blue-bell-600 bg-blue-bell-50/70 text-blue-bell-950 ring-2 ring-blue-bell-500/20 shadow-xs"
+                        : "border-border bg-card text-foreground hover:border-blue-bell-200 hover:bg-secondary/40"
                     )}
                   >
                     <div className="flex items-center justify-between">
-                      <LuTruck className="size-4" />
+                      <LuTruck className={cn("size-4", paymentMethod === "cod" ? "text-blue-bell-700" : "text-muted-foreground")} />
                       <span className="text-[10px] font-semibold uppercase">
                         COD
                       </span>
@@ -702,8 +702,8 @@ export function CartDrawer() {
                       className={cn(
                         "text-[10px] mt-0.5",
                         paymentMethod === "cod"
-                          ? "text-neutral-300"
-                          : "text-neutral-400"
+                          ? "text-blue-bell-700 font-medium"
+                          : "text-muted-foreground"
                       )}
                     >
                       Pay when delivered
@@ -713,14 +713,14 @@ export function CartDrawer() {
                   <label
                     onClick={() => setPaymentMethod("online")}
                     className={cn(
-                      "flex flex-col p-3 rounded-xl border text-left cursor-pointer transition-all",
+                      "flex flex-col p-3 rounded-xl border text-left cursor-pointer transition-all active:scale-[0.98]",
                       paymentMethod === "online"
-                        ? "border-neutral-900 bg-neutral-900 text-white shadow-xs"
-                        : "border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300"
+                        ? "border-blue-bell-600 bg-blue-bell-50/70 text-blue-bell-950 ring-2 ring-blue-bell-500/20 shadow-xs"
+                        : "border-border bg-card text-foreground hover:border-blue-bell-200 hover:bg-secondary/40"
                     )}
                   >
                     <div className="flex items-center justify-between">
-                      <LuCreditCard className="size-4" />
+                      <LuCreditCard className={cn("size-4", paymentMethod === "online" ? "text-blue-bell-700" : "text-muted-foreground")} />
                       <span className="text-[10px] font-semibold uppercase">
                         Online
                       </span>
@@ -887,14 +887,14 @@ export function CartDrawer() {
                               item.product.slug || item.product.id
                             }`}
                             onClick={handleClose}
-                            className="text-xs sm:text-sm font-semibold text-neutral-900 line-clamp-1 hover:text-neutral-600 transition-colors pt-0.5"
+                            className="text-xs sm:text-sm font-semibold text-foreground line-clamp-1 hover:text-blue-bell-800 transition-colors pt-0.5"
                           >
                             {item.product.name}
                           </Link>
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.id)}
-                            className="size-7 flex items-center justify-center rounded-lg text-neutral-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer shrink-0"
+                            className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer shrink-0 active:scale-90"
                             title="Remove from bucket"
                             aria-label="Remove item"
                           >
@@ -905,7 +905,7 @@ export function CartDrawer() {
                         {/* Variation & Category */}
                         <div className="mt-1 flex items-center flex-wrap gap-1.5">
                           {item.selectedVariation && (
-                            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-neutral-700 bg-neutral-100/90 rounded-md px-2 py-0.5 border border-neutral-200/50">
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-foreground bg-secondary rounded-md px-2 py-0.5 border border-border/60">
                               <span
                                 className="size-2 rounded-full border border-black/15 shrink-0"
                                 style={{
@@ -915,7 +915,7 @@ export function CartDrawer() {
                               <span>{item.selectedVariation.name}</span>
                             </span>
                           )}
-                          <span className="text-[11px] text-neutral-400 font-normal">
+                          <span className="text-[11px] text-muted-foreground font-normal">
                             {item.product.category}
                           </span>
                         </div>
@@ -923,7 +923,7 @@ export function CartDrawer() {
 
                       {/* Price & Quantity Controls */}
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="text-sm sm:text-base font-bold text-neutral-900 font-mono tracking-tight">
+                        <span className="text-sm sm:text-base font-bold text-foreground font-mono tracking-tight">
                           ৳
                           {(
                             (item.unitPrice || item.product.price) *
@@ -931,18 +931,18 @@ export function CartDrawer() {
                           ).toLocaleString("en-BD")}
                         </span>
 
-                        <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-2 py-1">
+                        <div className="flex items-center gap-2 rounded-lg border border-border bg-secondary/50 px-2 py-1">
                           <button
                             type="button"
                             onClick={() =>
                               updateQuantity(item.id, item.quantity - 1)
                             }
-                            className="rounded p-0.5 text-neutral-500 hover:bg-white hover:text-neutral-900 transition-colors cursor-pointer active:scale-90"
+                            className="rounded p-0.5 text-muted-foreground hover:bg-card hover:text-blue-bell-800 transition-colors cursor-pointer active:scale-90 active:bg-blue-bell-100"
                             aria-label="Decrease quantity"
                           >
                             <LuMinus className="size-3" />
                           </button>
-                          <span className="text-xs font-semibold text-neutral-900 min-w-4 text-center select-none font-mono">
+                          <span className="text-xs font-semibold text-foreground min-w-4 text-center select-none font-mono">
                             {item.quantity}
                           </span>
                           <button
@@ -950,7 +950,7 @@ export function CartDrawer() {
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
                             }
-                            className="rounded p-0.5 text-neutral-500 hover:bg-white hover:text-neutral-900 transition-colors cursor-pointer active:scale-90"
+                            className="rounded p-0.5 text-muted-foreground hover:bg-card hover:text-blue-bell-800 transition-colors cursor-pointer active:scale-90 active:bg-blue-bell-100"
                             aria-label="Increase quantity"
                           >
                             <LuPlus className="size-3" />

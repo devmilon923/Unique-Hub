@@ -28,19 +28,13 @@ export function Footer() {
 
   const contactMethods = [
     {
-      icon: LuPhone,
-      label: "Hotline",
-      val: "+880 1711-987654",
-      sub: "10AM – 8PM Daily",
-      href: "tel:+8801711987654",
-    },
-    {
       icon: LuMessageSquare,
       label: "WhatsApp",
-      val: "+880 1811-987654",
+      val: "+880 1902-652550",
       sub: "Live Order Chat",
-      href: "https://wa.me/8801811987654",
+      href: "https://wa.me/8801902652550",
     },
+
     {
       icon: LuMail,
       label: "Email",
@@ -50,9 +44,16 @@ export function Footer() {
     },
     {
       icon: LuMapPin,
-      label: "Dhaka Hub",
-      val: "Banani, Block D",
+      label: "Bangladesh Hub",
+      val: "2000, Jamalpur",
       sub: "Pickup & Inspection",
+      href: "#contact",
+    },
+    {
+      icon: LuMapPin,
+      label: "China Hub",
+      val: "Guzhen Town",
+      sub: "Distribution Center",
       href: "#contact",
     },
   ];
@@ -73,9 +74,12 @@ export function Footer() {
   ];
 
   return (
-    <footer id="contact" className="bg-white text-neutral-900 border-t border-neutral-200/90 scroll-mt-20">
+    <footer
+      id="contact"
+      className="bg-card text-foreground border-t border-border scroll-mt-20"
+    >
       {/* 1. Mobile-Friendly 2x2 / 4-Col Contact Cards */}
-      <div className="border-b border-neutral-200/80 bg-neutral-50/50 py-8 sm:py-10">
+      <div className="border-b border-border bg-secondary/35 py-8 sm:py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             {contactMethods.map((method, idx) => {
@@ -84,23 +88,23 @@ export function Footer() {
                 <a
                   key={idx}
                   href={method.href}
-                  className="group flex flex-col justify-between rounded-xl border border-neutral-200/80 bg-white p-3.5 sm:p-4 transition-all duration-200 hover:border-neutral-400 hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)] cursor-pointer active:scale-[0.99]"
+                  className="group flex flex-col justify-between rounded-2xl border border-border bg-card p-3.5 sm:p-4.5 transition-all duration-150 hover:border-blue-bell-200 hover:shadow-[0_8px_24px_-4px_rgba(10,171,245,0.08),0_2px_6px_rgba(17,16,20,0.03)] cursor-pointer active:scale-[0.98]"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex size-7 sm:size-8 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
-                      <Icon className="size-3.5 sm:size-4 stroke-[1.75]" />
+                    <div className="flex size-7 sm:size-8 items-center justify-center rounded-xl bg-secondary border border-border/70 text-muted-foreground transition-all duration-150 group-hover:bg-blue-bell-50 group-hover:text-blue-bell-700 group-hover:border-blue-bell-200 group-hover:shadow-2xs">
+                      <Icon className="size-3.5 sm:size-4 stroke-[1.8]" />
                     </div>
-                    <LuArrowUpRight className="size-3 text-neutral-300 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-neutral-700" />
+                    <LuArrowUpRight className="size-3 text-muted-foreground/40 transition-all duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-bell-600" />
                   </div>
 
                   <div className="mt-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground group-hover:text-blue-bell-700/80 transition-colors">
                       {method.label}
                     </p>
-                    <p className="mt-0.5 text-xs sm:text-sm font-semibold text-neutral-900 truncate">
+                    <p className="mt-0.5 text-xs sm:text-sm font-semibold text-foreground group-hover:text-blue-bell-950 transition-colors truncate">
                       {method.val}
                     </p>
-                    <p className="text-[10px] sm:text-xs text-neutral-500 truncate">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                       {method.sub}
                     </p>
                   </div>
@@ -123,47 +127,53 @@ export function Footer() {
                 aria-label="UniqueHub Home"
               >
                 <span className="font-[family-name:var(--font-geist-sans)] text-2xl font-bold tracking-tight text-neutral-900 transition-colors group-hover:text-neutral-700">
-                  Unique<span className="font-normal text-neutral-500">Hub</span>
+                  Unique
+                  <span className="font-normal text-neutral-500">Hub</span>
                 </span>
               </Link>
 
               <p className="mt-2.5 text-xs sm:text-sm text-neutral-500 leading-relaxed max-w-sm font-normal">
-                Curated international products delivered directly to customers in Bangladesh with complete customs clearance.
+                Curated international products delivered directly to customers
+                in Bangladesh with complete customs clearance.
               </p>
 
-              <div className="mt-3 flex items-center gap-2 text-xs font-medium text-neutral-700">
-                <LuShieldCheck className="size-4 text-neutral-900 shrink-0" />
+              <div className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground">
+                <LuShieldCheck className="size-4 text-blue-bell-600 shrink-0" />
                 <span>100% Customs & Duties Handled</span>
               </div>
             </div>
 
             {/* Compact Drop Alerts Signup */}
             <div className="pt-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 Drop Notifications
               </h4>
-              <p className="mt-1 text-xs text-neutral-500">
-                Get notified when new overseas batches and pre-order drops launch.
+              <p className="mt-1 text-xs text-muted-foreground">
+                Get notified when new overseas batches and pre-order drops
+                launch.
               </p>
 
               {subscribed ? (
-                <div className="mt-3 rounded-lg bg-neutral-100 p-2.5 text-xs font-medium text-neutral-800">
+                <div className="mt-3 rounded-xl bg-blue-bell-50 border border-blue-bell-200 p-2.5 text-xs font-medium text-blue-bell-900">
                   ✓ Subscribed to upcoming drop updates.
                 </div>
               ) : (
-                <form onSubmit={handleSubscribe} className="mt-3 flex items-center gap-2 max-w-sm">
+                <form
+                  onSubmit={handleSubscribe}
+                  className="mt-3 flex items-center gap-2 max-w-sm"
+                >
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
-                    className="h-9 rounded-lg border-neutral-200 bg-white text-xs placeholder:text-neutral-400 flex-1"
+                    className="h-9 rounded-xl border-border bg-card text-xs placeholder:text-muted-foreground/60 flex-1"
                   />
                   <Button
                     type="submit"
                     size="sm"
-                    className="h-9 rounded-lg bg-neutral-900 font-medium text-xs text-white hover:bg-neutral-800 shrink-0 px-3.5 cursor-pointer transition-all duration-200 active:scale-95"
+                    className="h-9 rounded-xl bg-primary font-medium text-xs text-primary-foreground hover:bg-primary-hover active:bg-onyx-900 shrink-0 px-3.5 cursor-pointer transition-all duration-150 active:scale-95 shadow-xs"
                   >
                     Subscribe
                   </Button>
@@ -173,40 +183,58 @@ export function Footer() {
           </div>
 
           {/* Navigation Links: 2-Columns on Mobile for clean organisation */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 pt-4 lg:pt-0 border-t lg:border-t-0 border-neutral-100">
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 pt-4 lg:pt-0 border-t lg:border-t-0 border-border">
             {/* Column 1: Shop */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 Shop
               </h4>
-              <ul className="mt-3 space-y-2 text-xs text-neutral-500">
+              <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
                 <li>
-                  <Link href="/products" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/products"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     All Products
                   </Link>
                 </li>
                 <li>
-                  <Link href="/track" className="hover:text-neutral-900 transition-colors font-medium text-neutral-800">
+                  <Link
+                    href="/track"
+                    className="hover:text-blue-bell-700 transition-colors font-medium text-foreground"
+                  >
                     Track Order
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products?filter=preorder" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/products?filter=preorder"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Pre-Order Drops
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#featured" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/#featured"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Featured Highlights
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/products"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Workspace Gear
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/products"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Smart Audio
                   </Link>
                 </li>
@@ -215,32 +243,47 @@ export function Footer() {
 
             {/* Column 2: Trust & Support */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 Sourcing & Trust
               </h4>
-              <ul className="mt-3 space-y-2 text-xs text-neutral-500">
+              <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
                 <li>
-                  <Link href="/#how-we-collect" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/#how-we-collect"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     How We Source
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#how-we-collect" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/#how-we-collect"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Customs Clearance
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#pre-order" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/#pre-order"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Air Cargo Schedules
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#contact" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/#contact"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Local Replacements
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#contact" className="hover:text-neutral-900 transition-colors">
+                  <Link
+                    href="/#contact"
+                    className="hover:text-blue-bell-700 transition-colors"
+                  >
                     Delivery in BD
                   </Link>
                 </li>
@@ -249,10 +292,10 @@ export function Footer() {
 
             {/* Column 3: Payment Methods & Info */}
             <div className="col-span-2 sm:col-span-1">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 Payment Options
               </h4>
-              <p className="mt-2 text-xs text-neutral-500 leading-relaxed">
+              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                 Instant online payment:
               </p>
 
@@ -261,7 +304,7 @@ export function Footer() {
                 {onlinePaymentOptions.map((item) => (
                   <div
                     key={item.name}
-                    className="flex h-10 w-16 sm:w-18 items-center justify-center rounded-lg border border-neutral-200/90 bg-white px-2.5 py-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] transition-all duration-200 hover:border-neutral-400 hover:shadow-xs"
+                    className="flex h-10 w-16 sm:w-18 items-center justify-center rounded-xl border border-border bg-card px-2.5 py-1.5 shadow-2xs transition-all duration-150 hover:border-blue-bell-200 hover:shadow-xs active:scale-95 cursor-pointer"
                     title={item.name}
                   >
                     <Image
@@ -276,8 +319,8 @@ export function Footer() {
               </div>
 
               {/* Cash on Delivery Notice */}
-              <div className="mt-3 flex items-center gap-2 text-xs text-neutral-600">
-                <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold text-neutral-800 font-mono">
+              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="rounded-md bg-secondary border border-border/80 px-1.5 py-0.5 text-[10px] font-semibold text-foreground font-mono">
                   COD
                 </span>
                 <span>Also accepts Cash on Delivery</span>
@@ -287,16 +330,25 @@ export function Footer() {
         </div>
 
         {/* 3. Bottom Legal & Copyright Bar */}
-        <div className="mt-12 pt-6 border-t border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 text-center sm:text-left">
+        <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground text-center sm:text-left">
           <p>© 2026 UniqueHub BD. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <Link href="/#contact" className="hover:text-neutral-900 transition">
+            <Link
+              href="/#contact"
+              className="hover:text-blue-bell-700 transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link href="/#contact" className="hover:text-neutral-900 transition">
+            <Link
+              href="/#contact"
+              className="hover:text-blue-bell-700 transition-colors"
+            >
               Terms of Service
             </Link>
-            <Link href="/#contact" className="hover:text-neutral-900 transition">
+            <Link
+              href="/#contact"
+              className="hover:text-blue-bell-700 transition-colors"
+            >
               Customs & Shipping Policy
             </Link>
           </div>

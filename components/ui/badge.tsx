@@ -8,19 +8,25 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/90",
+          "border-transparent bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         outline:
           "border border-border text-foreground hover:bg-muted/50",
         preorder:
-          "border border-amber-300 bg-amber-50 text-amber-900 font-medium",
+          "border border-commerce-subtle-border bg-commerce-subtle text-commerce-subtle-text font-medium",
+        commerce:
+          "border border-commerce-subtle-border bg-commerce-subtle text-commerce-subtle-text font-medium",
         discount:
-          "border-transparent bg-rose-500 text-white font-bold",
+          "border-transparent bg-commerce text-white font-bold",
+        logistics:
+          "border border-logistics-subtle-border bg-logistics-subtle text-logistics-subtle-text font-medium",
         success:
           "border border-emerald-300 bg-emerald-50 text-emerald-800 font-medium",
+        tech:
+          "border border-tech-subtle-border bg-tech-subtle text-tech-subtle-text font-medium",
         subtle:
-          "border border-border/60 bg-muted/70 text-muted-foreground",
+          "border border-border/80 bg-muted text-muted-foreground",
       },
       size: {
         default: "text-xs px-2.5 py-0.5",

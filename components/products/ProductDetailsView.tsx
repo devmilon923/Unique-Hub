@@ -112,16 +112,16 @@ export function ProductDetailsView({
           {/* Left Column: Visual Showcase & Gallery (6 cols) */}
           <div className="lg:col-span-6 flex flex-col gap-4">
             {/* Main 4:3 Image Showcase */}
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-neutral-200/90 bg-neutral-100/80 shadow-xs">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border/80 bg-secondary shadow-xs">
               {/* Clean Pre-Order / In-Stock Badge (Top-Left Only) */}
               <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex items-center gap-2 pointer-events-none">
                 {product.isPreOrder ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/75 backdrop-blur-md border border-white/80 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-800 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-                    <span className="size-1.5 rounded-full bg-neutral-800" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-md border border-commerce-subtle-border px-2.5 py-1 text-[10px] font-medium tracking-wide text-commerce-subtle-text shadow-xs">
+                    <span className="size-1.5 rounded-full bg-commerce animate-pulse" />
                     <span>Pre-Order • {product.preOrderBatch || "Batch 08"}</span>
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/75 backdrop-blur-md border border-white/80 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-800 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-md border border-border px-2.5 py-1 text-[10px] font-medium tracking-wide text-foreground shadow-xs">
                     <span className="size-1.5 rounded-full bg-emerald-600" />
                     <span>Ready Stock • Dhaka</span>
                   </span>
@@ -150,10 +150,10 @@ export function ProductDetailsView({
                       type="button"
                       onClick={() => setActiveImage(img)}
                       className={cn(
-                        "relative aspect-[4/3] w-full overflow-hidden rounded-xl border p-0.5 transition-all duration-200 ease-out cursor-pointer active:scale-95",
+                        "relative aspect-[4/3] w-full overflow-hidden rounded-xl border p-0.5 transition-all duration-150 ease-out cursor-pointer active:scale-95",
                         isSelected
-                          ? "border-neutral-900 ring-2 ring-neutral-900/10 shadow-xs"
-                          : "border-neutral-200 hover:border-neutral-400 opacity-80 hover:opacity-100"
+                          ? "border-blue-bell-600 ring-2 ring-blue-bell-500/25 shadow-xs"
+                          : "border-border hover:border-blue-bell-300 opacity-80 hover:opacity-100"
                       )}
                       aria-label={`Product image view ${idx + 1}`}
                     >
@@ -175,56 +175,54 @@ export function ProductDetailsView({
           <div className="lg:col-span-6 flex flex-col justify-start space-y-6">
             {/* Header: Category, Title & Origin */}
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {product.category}
               </p>
 
-              <h1 className="mt-1 text-2xl sm:text-3xl lg:text-[2rem] font-semibold tracking-tight text-neutral-900 leading-snug">
+              <h1 className="mt-1 text-2xl sm:text-3xl lg:text-[2rem] font-semibold tracking-tight text-foreground leading-snug">
                 {product.name}
               </h1>
 
-              <p className="mt-2 text-xs text-neutral-500 flex items-center gap-1.5">
-                <LuShieldCheck className="size-3.5 text-neutral-600 shrink-0" />
+              {/* Logistics & Trust Origin Pill (Blue Bell Channel) */}
+              <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg border border-logistics-subtle-border bg-logistics-subtle px-2.5 py-1 text-xs text-logistics-subtle-text">
+                <LuShieldCheck className="size-3.5 text-logistics shrink-0" />
                 <span>
-                  Direct Import from{" "}
-                  <strong className="text-neutral-700 font-medium">
-                    {product.origin}
-                  </strong>
+                  Direct Import from <strong className="font-semibold">{product.origin}</strong> • Customs Cleared
                 </span>
-              </p>
+              </div>
             </div>
 
             {/* Price Section with Integrated Savings Badge & Pre-Order 50% Policy */}
-            <div className="border-t border-neutral-200/80 pt-5">
+            <div className="border-t border-border/80 pt-5">
               <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 font-mono">
+                <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground font-mono">
                   ৳{unitPrice.toLocaleString("en-BD")}
                 </span>
 
                 {isPreOrder && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 text-white px-2.5 py-0.5 text-[11px] font-medium shadow-2xs">
-                    <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Pay 50% Now</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-commerce text-white px-2.5 py-0.5 text-[11px] font-medium shadow-xs">
+                    <span className="size-1.5 rounded-full bg-white animate-pulse" />
+                    <span>Pay 50% Advance</span>
                   </span>
                 )}
 
                 {isPreOrder ? (
-                  <span className="text-xs sm:text-sm text-neutral-500">
+                  <span className="text-xs sm:text-sm text-muted-foreground">
                     Full Price:{" "}
-                    <strong className="text-neutral-800 font-semibold font-mono">
+                    <strong className="text-foreground font-semibold font-mono">
                       ৳{fullUnitPrice.toLocaleString("en-BD")}
                     </strong>
                   </span>
                 ) : (
                   originalUnitPrice && originalUnitPrice > unitPrice && (
-                    <span className="text-base sm:text-lg text-neutral-400 line-through">
+                    <span className="text-base sm:text-lg text-muted-foreground line-through">
                       ৳{originalUnitPrice.toLocaleString("en-BD")}
                     </span>
                   )
                 )}
 
                 {!isPreOrder && discountPercent && (
-                  <span className="rounded-md bg-rose-50 border border-rose-200/80 px-2.5 py-0.5 text-xs font-semibold text-rose-700">
+                  <span className="rounded-md bg-commerce-subtle border border-commerce-subtle-border px-2.5 py-0.5 text-xs font-semibold text-commerce-subtle-text">
                     Save {discountPercent}%
                   </span>
                 )}
@@ -299,8 +297,8 @@ export function ProductDetailsView({
                           !v.isAvailable
                             ? "opacity-35 cursor-not-allowed"
                             : isSelected
-                            ? "ring-2 ring-neutral-900 ring-offset-2 scale-105 cursor-pointer"
-                            : "hover:scale-110 opacity-85 hover:opacity-100 cursor-pointer active:scale-95"
+                            ? "ring-2 ring-blue-bell-600 ring-offset-2 scale-105 cursor-pointer shadow-xs"
+                            : "hover:scale-110 hover:ring-2 hover:ring-blue-bell-300 hover:ring-offset-1 opacity-85 hover:opacity-100 cursor-pointer active:scale-95"
                         )}
                         aria-label="Color option"
                         aria-disabled={!v.isAvailable}
@@ -393,18 +391,18 @@ export function ProductDetailsView({
             <div className="border-t border-neutral-200/80 pt-5 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 {/* Quantity Counter */}
-                <div className="flex items-center justify-between rounded-xl border border-neutral-300 bg-white p-1 h-12 w-full sm:w-auto shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center justify-between rounded-xl border border-border bg-card p-1 h-12 w-full sm:w-auto shrink-0 shadow-2xs">
                   <button
                     type="button"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1 || !isCurrentVariationAvailable}
-                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-30 disabled:hover:bg-transparent transition-all duration-150 cursor-pointer active:scale-90"
+                    className="rounded-lg p-2 text-muted-foreground hover:bg-blue-bell-50 hover:text-blue-bell-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all duration-150 cursor-pointer active:scale-90 active:bg-blue-bell-100"
                     aria-label="Decrease quantity"
                   >
                     <LuMinus className="size-3.5" />
                   </button>
 
-                  <span className="min-w-9 text-center text-sm font-semibold text-neutral-900 font-mono select-none">
+                  <span className="min-w-9 text-center text-sm font-semibold text-foreground font-mono select-none">
                     {quantity}
                   </span>
 
@@ -412,7 +410,7 @@ export function ProductDetailsView({
                     type="button"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= 10 || !isCurrentVariationAvailable}
-                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-30 disabled:hover:bg-transparent transition-all duration-150 cursor-pointer active:scale-90"
+                    className="rounded-lg p-2 text-muted-foreground hover:bg-blue-bell-50 hover:text-blue-bell-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all duration-150 cursor-pointer active:scale-90 active:bg-blue-bell-100"
                     aria-label="Increase quantity"
                   >
                     <LuPlus className="size-3.5" />
@@ -427,7 +425,7 @@ export function ProductDetailsView({
                   onClick={handleAddToCart}
                   disabled={!isCurrentVariationAvailable}
                   className={cn(
-                    "flex-1 rounded-xl h-12 text-sm font-semibold cursor-pointer transition-all duration-200 ease-out border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-900 shadow-none gap-2 active:scale-[0.98]",
+                    "flex-1 rounded-xl h-12 text-sm font-semibold cursor-pointer transition-all duration-150 ease-out border-border bg-card hover:bg-blue-bell-50/70 hover:border-blue-bell-200 hover:text-blue-bell-800 text-foreground shadow-2xs gap-2 active:scale-[0.98] active:bg-blue-bell-100",
                     addedToast &&
                       "bg-emerald-50 border-emerald-400 text-emerald-800"
                   )}
@@ -439,7 +437,7 @@ export function ProductDetailsView({
                     </>
                   ) : (
                     <>
-                      <LuShoppingBag className="size-4 text-neutral-700" />
+                      <LuShoppingBag className="size-4 text-muted-foreground" />
                       <span>Add to Bucket</span>
                     </>
                   )}
@@ -451,9 +449,14 @@ export function ProductDetailsView({
                   size="lg"
                   onClick={handleBuyNow}
                   disabled={!isCurrentVariationAvailable}
-                  className="flex-1 rounded-xl h-12 text-sm font-semibold cursor-pointer transition-all duration-200 ease-out bg-neutral-900 hover:bg-neutral-800 hover:shadow-sm text-white shadow-xs gap-2 active:scale-[0.98]"
+                  className={cn(
+                    "flex-1 rounded-xl h-12 text-sm font-semibold cursor-pointer transition-all duration-200 ease-out text-white shadow-xs gap-2 active:scale-[0.98]",
+                    isPreOrder
+                      ? "bg-commerce hover:bg-commerce-hover shadow-sm"
+                      : "bg-primary hover:bg-primary-hover shadow-xs"
+                  )}
                 >
-                  <LuZap className="size-4 text-amber-400 fill-amber-400" />
+                  <LuZap className={cn("size-4", isPreOrder ? "text-white fill-white" : "text-amber-400 fill-amber-400")} />
                   <span>
                     {isPreOrder
                       ? `Pre-Order Now • Pay ৳${totalPrice.toLocaleString("en-BD")}`
@@ -463,9 +466,9 @@ export function ProductDetailsView({
               </div>
 
               {/* Minimal Trust & Logistics Guarantee */}
-              <div className="flex items-center justify-between flex-wrap gap-2 pt-1 text-[11px] text-neutral-400">
-                <span className="flex items-center gap-1 text-neutral-500">
-                  <LuCheck className="size-3 text-emerald-600" />
+              <div className="flex items-center justify-between flex-wrap gap-2 pt-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-logistics-subtle-text">
+                  <LuCheck className="size-3.5 text-logistics shrink-0" />
                   <span>All customs & import duties included</span>
                 </span>
                 {quantity > 1 ? (

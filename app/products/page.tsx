@@ -190,13 +190,13 @@ function ProductsContent() {
                 setVisibleCount(INITIAL_VISIBLE_COUNT);
               }}
               placeholder="Search products..."
-              className="pl-9 pr-9 h-10 rounded-lg border-neutral-200 bg-white text-sm"
+              className="pl-9 pr-9 h-10 rounded-xl border-border bg-card text-sm"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-0.5 text-neutral-400 hover:text-neutral-700 transition-colors duration-150 cursor-pointer active:scale-90"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground transition-colors duration-150 cursor-pointer active:scale-90"
               >
                 <LuX className="size-4" />
               </button>
@@ -220,10 +220,10 @@ function ProductsContent() {
                   setVisibleCount(INITIAL_VISIBLE_COUNT);
                 }}
                 className={cn(
-                  "shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-200 ease-out border active:scale-95",
+                  "shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 ease-out border active:scale-95",
                   isSelected
-                    ? "bg-neutral-900 text-white border-neutral-900 shadow-xs"
-                    : "bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300",
+                    ? "bg-primary text-primary-foreground border-primary shadow-xs active:bg-onyx-900"
+                    : "bg-card text-muted-foreground border-border hover:bg-blue-bell-50 hover:border-blue-bell-200 hover:text-blue-bell-800 active:bg-blue-bell-100",
                 )}
               >
                 {cat}
@@ -235,10 +235,11 @@ function ProductsContent() {
             <button
               type="button"
               onClick={() => setFilterPreorderOnly(false)}
-              className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium bg-neutral-900 text-white border border-neutral-900 flex items-center gap-1 cursor-pointer transition-all duration-200 active:scale-95 shadow-xs"
+              className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold bg-commerce-subtle text-commerce-subtle-text border border-commerce-subtle-border flex items-center gap-1.5 cursor-pointer transition-all duration-150 active:scale-95 shadow-2xs hover:bg-blue-bell-100"
             >
+              <span className="size-1.5 rounded-full bg-commerce animate-pulse" />
               <span>Pre-Orders Only</span>
-              <LuX className="size-3" />
+              <LuX className="size-3 text-commerce-subtle-text/80 hover:text-commerce-subtle-text" />
             </button>
           )}
         </div>
@@ -317,7 +318,7 @@ function ProductsContent() {
             size="lg"
             variant="outline"
             onClick={() => setVisibleCount((prev) => prev + LOAD_MORE_STEP)}
-            className="rounded-xl border-neutral-300 bg-white px-8 font-medium text-neutral-900 hover:bg-neutral-50 shadow-none gap-2 text-sm cursor-pointer transition-all duration-200 ease-out active:scale-[0.98]"
+            className="rounded-xl px-8 font-medium gap-2 text-sm cursor-pointer transition-all duration-150 ease-out active:scale-[0.98]"
           >
             <span>See More Products</span>
             <LuArrowDown className="size-4" />

@@ -95,8 +95,8 @@ export function Navbar() {
                   className={cn(
                     "px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95",
                     active
-                      ? "text-neutral-950 font-semibold bg-neutral-100 shadow-2xs"
-                      : "text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100/70",
+                      ? "text-primary font-semibold bg-secondary shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/70 active:bg-secondary",
                   )}
                 >
                   {link.name}
@@ -111,12 +111,14 @@ export function Navbar() {
             <Link
               href="/products"
               className={cn(
-                "group flex size-8 sm:size-auto sm:px-3.5 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-neutral-200/90 bg-neutral-50/80 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950 text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 shadow-2xs",
-                pathname.startsWith("/products") && "bg-neutral-100 border-neutral-300 text-neutral-950 font-semibold"
+                "group flex size-8 sm:size-auto sm:px-3.5 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 shadow-2xs",
+                pathname.startsWith("/products")
+                  ? "bg-secondary border-border-strong text-foreground font-semibold"
+                  : "border-border/80 bg-secondary/60 hover:bg-white hover:border-blue-bell-200 hover:text-blue-bell-800 text-foreground active:bg-secondary",
               )}
               aria-label="Find Product"
             >
-              <LuCompass className="size-4 sm:size-3.5 text-neutral-600 group-hover:text-neutral-950 group-hover:rotate-45 transition-transform duration-200" />
+              <LuCompass className="size-4 sm:size-3.5 text-muted-foreground group-hover:text-blue-bell-700 group-hover:rotate-45 transition-all duration-200" />
               <span className="hidden sm:inline">Find Product</span>
             </Link>
 
@@ -126,8 +128,8 @@ export function Navbar() {
               className={cn(
                 "group flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border transition-all duration-150 text-xs font-medium active:scale-95 cursor-pointer shadow-2xs",
                 pathname.startsWith("/track")
-                  ? "bg-neutral-900 text-white border-neutral-900"
-                  : "border-neutral-200/90 bg-white hover:bg-neutral-50 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border/80 bg-white hover:bg-blue-bell-50 hover:border-blue-bell-200 hover:text-blue-bell-800 text-foreground active:bg-blue-bell-100",
               )}
               aria-label="Track Your Order"
             >
@@ -135,8 +137,8 @@ export function Navbar() {
                 className={cn(
                   "size-4 sm:size-3.5 transition-colors",
                   pathname.startsWith("/track")
-                    ? "text-white"
-                    : "text-neutral-600 group-hover:text-neutral-950"
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground group-hover:text-blue-bell-700",
                 )}
               />
               <span className="hidden sm:inline">Track Order</span>
@@ -149,15 +151,15 @@ export function Navbar() {
                 setDrawerStep("cart");
                 setIsCartOpen(true);
               }}
-              className="group relative flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-neutral-200/90 bg-white hover:bg-neutral-50 hover:border-neutral-300 text-neutral-800 hover:text-neutral-950 transition-all duration-150 text-xs font-medium active:scale-95 cursor-pointer shadow-2xs"
+              className="group relative flex size-8 sm:size-auto sm:px-3 sm:py-1.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-border/80 bg-white hover:bg-secondary hover:border-border-strong text-foreground transition-all duration-150 text-xs font-medium active:scale-95 cursor-pointer shadow-2xs"
               aria-label={`View Bucket, ${totalCount} items`}
             >
-              <LuShoppingBag className="size-4 text-neutral-700 group-hover:text-neutral-950 transition-colors" />
-              <span className="hidden sm:inline font-medium text-neutral-700 group-hover:text-neutral-950">
+              <LuShoppingBag className="size-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              <span className="hidden sm:inline font-medium text-foreground">
                 Bucket
               </span>
               {totalCount > 0 ? (
-                <span className="absolute -top-1 -right-1 sm:static sm:top-auto sm:right-auto flex items-center justify-center min-w-4 sm:min-w-[18px] h-4 sm:h-[18px] px-1 rounded-full bg-neutral-900 text-[9px] sm:text-[10px] font-mono font-bold text-white tabular-nums shadow-xs">
+                <span className="absolute -top-1 -right-1 sm:static sm:top-auto sm:right-auto flex items-center justify-center min-w-4 sm:min-w-[18px] h-4 sm:h-[18px] px-1 rounded-full bg-commerce text-[9px] sm:text-[10px] font-mono font-bold text-white tabular-nums shadow-xs">
                   {totalCount}
                 </span>
               ) : (

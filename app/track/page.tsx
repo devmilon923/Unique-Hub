@@ -193,7 +193,7 @@ function TrackOrderContent() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-10 rounded-xl bg-neutral-900 text-xs font-semibold text-white hover:bg-neutral-800 transition-colors cursor-pointer gap-1.5"
+              className="w-full h-10 rounded-xl bg-primary text-xs font-semibold text-primary-foreground hover:bg-primary-hover active:bg-onyx-900 active:scale-[0.99] transition-all cursor-pointer gap-1.5 shadow-2xs"
             >
               {isLoading ? (
                 <LuLoader className="size-4 animate-spin" />
@@ -208,7 +208,7 @@ function TrackOrderContent() {
         </form>
 
         {errorMessage && (
-          <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700 flex items-start gap-2">
+          <div className="mt-4 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-xs text-destructive flex items-start gap-2">
             <LuShieldAlert className="size-4 shrink-0 mt-0.5" />
             <span>{errorMessage}</span>
           </div>
@@ -219,20 +219,20 @@ function TrackOrderContent() {
       {orderData && (
         <div className="space-y-6">
           {/* Header Status Bar */}
-          <div className="bg-white rounded-2xl border border-neutral-200/90 p-5 sm:p-6 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-neutral-100">
+          <div className="bg-card rounded-2xl border border-border p-5 sm:p-6 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border/70">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-neutral-500 font-medium">
+                  <span className="text-xs text-muted-foreground font-medium">
                     Invoice:
                   </span>
-                  <span className="text-sm font-mono font-bold text-neutral-950">
+                  <span className="text-sm font-mono font-bold text-foreground">
                     #{orderData.invoiceId}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleCopy(orderData.invoiceId)}
-                    className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                    className="p-1 rounded-md text-muted-foreground hover:text-blue-bell-700 hover:bg-blue-bell-50 transition-colors cursor-pointer active:scale-90"
                     title="Copy invoice ID"
                   >
                     {copiedInvoice ? (
