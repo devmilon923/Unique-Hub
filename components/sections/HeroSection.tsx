@@ -38,8 +38,8 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
 
 const FIXED_BANNER = {
   image: "/images/hero/fix-image.jpg",
-  alt: "UniqueHub Daily Highlights and Special Offers",
-  href: "/products",
+  alt: "Chat with UniqueHub on WhatsApp for Inquiries and Custom Orders",
+  href: "https://wa.me/8801902652550",
 };
 
 export function HeroSection() {
@@ -333,11 +333,14 @@ export function HeroSection() {
 
           {/* 30% Fixed Promotional Image */}
           <div className="lg:col-span-3 w-full">
-            <div className="group relative w-full h-full min-h-[190px] sm:min-h-[240px] lg:min-h-0 aspect-[16/9] lg:aspect-auto overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-100/80 shadow-xs select-none">
+            <div className="group relative w-full h-full min-h-[190px] sm:min-h-[240px] lg:min-h-0 aspect-[16/9] lg:aspect-auto overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-100/80 shadow-xs select-none hover:border-blue-bell-300/60 transition-colors duration-300">
               {FIXED_BANNER.href ? (
                 <Link
                   href={FIXED_BANNER.href}
-                  className="block relative w-full h-full"
+                  target={FIXED_BANNER.href.startsWith("http") ? "_blank" : undefined}
+                  rel={FIXED_BANNER.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="block relative w-full h-full cursor-pointer"
+                  aria-label="Contact UniqueHub on WhatsApp"
                 >
                   <Image
                     src={FIXED_BANNER.image}
